@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSP.Database", "Database\GS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSP.Queue", "Queue\GSP.Queue.csproj", "{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{A302DAE8-AF3B-4593-AA08-277365FC449E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A302DAE8-AF3B-4593-AA08-277365FC449E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A302DAE8-AF3B-4593-AA08-277365FC449E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A302DAE8-AF3B-4593-AA08-277365FC449E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A302DAE8-AF3B-4593-AA08-277365FC449E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

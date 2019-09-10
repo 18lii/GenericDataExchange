@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
+﻿using Queue;
 using System.ServiceModel;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+using WCFService.Service;
+using Core.Infrastructure;
 using WCFService;
 
 namespace WindowsService
@@ -17,11 +12,12 @@ namespace WindowsService
         public WindowsService()
         {
             InitializeComponent();
-            Host = new ServiceHost(typeof(WCFService.DataExchangeService));
+            Host = new ServiceHost(typeof(DataExchangeService));
         }
 
         protected override void OnStart(string[] args)
         {
+            Initialization.PeristalticStart(new PeristalticConfiguration(args[0].Decryptogram(args[1].Decryptogram(""))));
             Host.Open();
         }
 

@@ -10,30 +10,41 @@ namespace Core.Dependency
 {
     public class DITypeAnalytical : IDITypeAnalytical
     {
+        
         public T GetValue<T>()
         {
-            var type = typeof(T);
-            var constructorInfos = type.GetConstructors();
-            object instance = null;
-            foreach (var conInfo in constructorInfos)
+            Func<Type, object> analytical = null;
+            analytical = delegate (Type type)
             {
-                if (conInfo.GetParameters().Length > 0)
+                var constructorInfos = type.GetConstructors();
+                object instance = null;
+                foreach (var conInfo in constructorInfos)
                 {
-                    var paras = conInfo.GetParameters();
-                    var args = new List<object>();
-
-                    foreach (var para in paras)
+                    if (conInfo.GetParameters().Length > 0)
                     {
-                        if (IoCContext.Context.DIManager.ContainsKey(para.ParameterType))
+                        var paras = conInfo.GetParameters();
+                        var args = new List<object>();
+
+                        foreach (var para in paras)
                         {
-                            args.Add(para);
+                            if (IoCContext.Context.DIManager.ContainsKey(para.ParameterType))
+                            {
+                                args.Add(analytical(IoCContext.Context.DIManager.GetTypeInfo(para.ParameterType)));
+                            }
                         }
+                        instance = Activator.CreateInstance(type, args.ToArray());
+                        break;
                     }
-                    instance = Activator.CreateInstance(type, args);
-                    break;
+                    else
+                    {
+                        return Activator.CreateInstance(type);
+                    }
                 }
-            }
-            return (T)instance;
+                return instance;
+            };
+            var targetType = typeof(T);
+            var obj = analytical(targetType);
+            return (T)obj;
         }
     }
 }

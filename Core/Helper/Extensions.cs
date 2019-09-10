@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -66,6 +68,25 @@ namespace Core.Helper
                 result = defaultValue;
             }
             return (T)result;
+        }
+        /// <summary>
+        /// 将<see cref="Hashtable"/>类型参数转换为内部标准参数
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static ConcurrentBag<ConcurrentDictionary<string, object>> ToContextParam(this IList<Hashtable> values)
+        {
+            var bag = new ConcurrentBag<ConcurrentDictionary<string, object>>();
+            foreach (var ht in values)
+            {
+                var dic = new ConcurrentDictionary<string, object>();
+                foreach (DictionaryEntry item in ht)
+                {
+                    dic.TryAdd(item.Key.ToString(), item.Value);
+                }
+                bag.Add(dic);
+            }
+            return bag;
         }
     }
     /// <summary>

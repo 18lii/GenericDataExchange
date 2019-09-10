@@ -54,8 +54,8 @@
     <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Ignition\Entry.cs" />
     <Compile Include="Ignition\Timespan.cs" />
-    <Compile Include="Infrastructure\DataCompression.cs" />
-    <Compile Include="Infrastructure\DESCryptoService.cs" />
+    <Compile Include="Infrastructure\CompressionExtensions.cs" />
+    <Compile Include="Infrastructure\DESCryptExtensions.cs" />
     <Compile Include="Infrastructure\XmlUtil.cs" />
     <Compile Include="Interface\IDITypeAnalytical.cs" />
     <Compile Include="Interface\IDITypeAnalyticalProvider.cs" />
