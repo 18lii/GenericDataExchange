@@ -34,19 +34,19 @@ namespace Database.Factories
         {
             return GenericEventHandle.OnResultEvent(id);
         }
-        ///// <summary>
-        ///// 数据库记录获取
-        ///// </summary>
-        ///// <param name="userId"></param>
-        ///// <param name="name"></param>
-        ///// <param name="param"></param>
-        //public Guid Get(string userId, )
-        //{
-        //    var context = new FactoryContext(DbOperate.Select, sqlText, );
-        //    var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-        //    GenericEventHandle.OnQueueEvent(evg);
-        //    return evg.Id;
-        //}
+        /// <summary>
+        /// 数据库记录获取
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        public Guid Get(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        {
+            var context = new FactoryContext(DbOperate.Select, param, sqlText);
+            var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
+            GenericEventHandle.OnQueueEvent(evg);
+            return evg.Id;
+        }
 
         ///// <summary>
         ///// 向数据库插入记录

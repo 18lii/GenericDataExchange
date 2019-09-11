@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Core.Dependency
 {
+    /// <summary>
+    /// 分析类型，提供程序
+    /// </summary>
     public class DefualtDITypeAnalyticalProivder : IDITypeAnalyticalProvider
     {
         public IDITypeAnalytical CreateDITypeAnalaytical()

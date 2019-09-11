@@ -25,6 +25,7 @@ namespace UnitTestProject.Tests
         [TestMethod]
         public void DESCrypt()
         {
+            var keycode = "jxkejixu".Encryptogram();
             var signal = new AutoResetEvent(false);
             signal.WaitOne();
             var encrypeStr = ConnectionStr.Encryptogram("jxkejixu");

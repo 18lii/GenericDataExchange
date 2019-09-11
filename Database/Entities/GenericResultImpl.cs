@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Database.Entities
 {
+    /// <summary>
+    /// 通用返回值本地实现
+    /// </summary>
     internal class GenericResultImpl : GenericResult
     {
         public GenericResultImpl(ResultType resultType) : base(resultType) { }

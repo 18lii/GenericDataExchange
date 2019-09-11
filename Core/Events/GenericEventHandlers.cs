@@ -1,12 +1,11 @@
 ﻿using Core.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Events
 {
+    /// <summary>
+    /// 全局通用队列入列事件类
+    /// </summary>
     public static class GenericEventHandle
     {
         private static event Action<object> GenericEvent;
@@ -38,6 +37,10 @@ namespace Core.Events
             return GenericResultEvent.Invoke(id);
         }
     }
+    /// <summary>
+    /// 队列专用，事务处理事件类，无返回值事件
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class GenericEventHandle<T>
     {
         private event Action<T> GenericEvent;
@@ -55,6 +58,11 @@ namespace Core.Events
             GenericEvent.BeginInvoke(t, c, GenericEvent);
         }
     }
+    /// <summary>
+    /// 队列专用，事务处理事件类，有返回值
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="R"></typeparam>
     public class GenericEventHandle<T, R>
     {
         private event Func<T, R> GenericEvent;

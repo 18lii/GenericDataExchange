@@ -17,7 +17,7 @@ namespace WindowsService
 
         protected override void OnStart(string[] args)
         {
-            Initialization.PeristalticStart(new PeristalticConfiguration(args[0].Decryptogram(args[1].Decryptogram(""))));
+            Initialization.PeristalticStart(new PeristalticConfiguration(args));
             Host.Open();
         }
 

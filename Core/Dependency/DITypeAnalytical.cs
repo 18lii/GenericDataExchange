@@ -8,13 +8,15 @@ using System.Threading.Tasks;
 
 namespace Core.Dependency
 {
+    /// <summary>
+    /// 反射实例化
+    /// </summary>
     public class DITypeAnalytical : IDITypeAnalytical
     {
         
         public T GetValue<T>()
         {
-            Func<Type, object> analytical = null;
-            analytical = delegate (Type type)
+            object analytical(Type type)
             {
                 var constructorInfos = type.GetConstructors();
                 object instance = null;

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Interface
 {
+    /// <summary>
+    /// 反射器接口
+    /// </summary>
     public interface IDITypeAnalytical
     {
         T GetValue<T>();

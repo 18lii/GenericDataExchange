@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Core.Ignition
 {
     /// <summary>
-    /// 入列事件触发类
+    /// 入列触发计时器
     /// </summary>
     internal class Timespan : ITimespan
     {

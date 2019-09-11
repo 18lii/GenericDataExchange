@@ -65,6 +65,14 @@
       <Project>{BAA1BC30-4A51-40A0-B074-7B5C5A556F9D}</Project>
       <Name>GSP.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Queue\GSP.Queue.csproj">
+      <Project>{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}</Project>
+      <Name>GSP.Queue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WCFService\GSP.WCFService.csproj">
+      <Project>{273439B1-53FF-48A7-89AA-42632039BB5B}</Project>
+      <Name>GSP.WCFService</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace Core.Infrastructure
 {
+    /// <summary>
+    /// DES加密解密类
+    /// </summary>
     public static class DESCryptExtensions
     {
         /// <summary>
-        /// 加密方法
+        /// 加密
         /// </summary>
         /// <param name="str"></param>
-        public static string Encryptogram(this string str, string key)
+        public static string Encryptogram(this string str, string key = "#default")
         {
             using (var desp = new DESCryptoServiceProvider())
             {
@@ -36,13 +39,13 @@ namespace Core.Infrastructure
             }
         }
         /// <summary>
-        /// DES解密
+        /// 解密
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="decryptStr"></param>
         /// <returns></returns>
-        public static string Decryptogram(this string decryptStr, string key)
+        public static string Decryptogram(this string decryptStr, string key = "#default")
         {
             if (decryptStr.Length > 0)
             {

@@ -8,6 +8,16 @@ using System.Threading;
 
 namespace Queue.EventContext
 {
+    /**
+     * Shine
+     * 2019-9-6  
+     * 队列对象处理方法，通过委托绑定，
+     * 包含：
+     * Worker处理完成后，保持线程处于等待状态，
+     **/
+    /// <summary>
+    /// 消息处理类
+    /// </summary>
     internal class FunctionEventWorker<T, R>
     {
         private GenericEventHandle<IGenericEventArg<T>, R> Handler { get; }

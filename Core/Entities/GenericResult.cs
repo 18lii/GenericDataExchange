@@ -3,6 +3,9 @@ using Core.Interface;
 
 namespace Core.Entities
 {
+    /// <summary>
+    /// 通用返回值抽象类
+    /// </summary>
     public abstract class GenericResult : IGenericResult
     {
         public GenericResult(ResultType resultType)

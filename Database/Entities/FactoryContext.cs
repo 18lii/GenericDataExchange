@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Database.Entities
 {
+    /// <summary>
+    /// 数据库操作类工厂上下文
+    /// </summary>
     internal class FactoryContext : IFactoryContext
     {
         public FactoryContext(DbOperate operate, ConcurrentBag<ConcurrentDictionary<string, object>> param, string sqlText = null)

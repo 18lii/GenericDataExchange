@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Queue.Entities
 {
     /// <summary>
-    /// 消息处理EventArgs
+    /// 消息处理EventArgs，内部
     /// </summary>
     /// <typeparam name="T"></typeparam>
     internal class ProcessorEventArgs<T> : EventArgs

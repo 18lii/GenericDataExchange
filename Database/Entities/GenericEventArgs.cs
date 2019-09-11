@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace Database.Entities
 {
+    /// <summary>
+    /// 通用事件参数信息类本地实现
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     internal class GenericEventArgs<T> : IGenericEventArg<T>
     {
         public Guid Id { get; set; } = Guid.NewGuid();
