@@ -6,9 +6,11 @@ using Database.Interface;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Queue;
 using System;
+using System.ServiceModel;
 using UnitTestProject.Infrastructure;
 using WCFService;
 using WCFService.Entity;
+using WCFService.Service;
 
 namespace UnitTestProject.Tests
 {
@@ -51,6 +53,14 @@ namespace UnitTestProject.Tests
             {
                 Assert.IsTrue(false);
             }
+        }
+        [TestMethod]
+        public void WindowsServiceTest()
+        {
+            ServiceHost host = new ServiceHost(typeof(DataExchangeService));
+            host.Open();
+            Console.ReadLine();
+            host.Close();
         }
     }
 }

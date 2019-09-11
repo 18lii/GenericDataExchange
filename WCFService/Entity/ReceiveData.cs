@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace WCFService.Entity
 {
     [Serializable]
-    [DataContract(Namespace ="http://1.1.1.1:8733/DataExchangeService")]
+    [DataContract(Name = "SendData", Namespace ="http://1.1.1.1:8733/DataExchangeService")]
     public class ReceiveData
     {
         [DataMember(Order = 0)]
@@ -18,7 +18,5 @@ namespace WCFService.Entity
         public Hashtable[] Param { get; set; }
         [DataMember(Order = 3)]
         public DataSet DataSet { get; set; }
-        [DataMember(Order = 4)]
-        public PolicyType PolicyType { get; set; }
     }
 }

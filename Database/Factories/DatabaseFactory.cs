@@ -62,7 +62,7 @@ namespace Database.Factories
         }
 
         /// <summary>
-        /// 向数据库更新记录， 参数param列表中必须包含<see cref="IGenericParameter.ParamType"/> = W的参数，否则更新失败；
+        /// 向数据库更新记录， 参数param列表中必须包含where参数，否则更新失败；
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="name"></param>
@@ -78,13 +78,13 @@ namespace Database.Factories
             return evg.Id;
         }
 
-        ///// <summary>
-        ///// 删除数据库中的记录，参数param列表中必须包含<see cref="IGenericParameter.ParamType"/> = W的参数，否则更新失败；
-        ///// </summary>
-        ///// <param name="userId"></param>
-        ///// <param name="name"></param>
-        ///// <param name="param"></param>
-        ///// <returns></returns>
+        /// <summary>
+        /// 删除数据库中的记录，参数param列表中必须包含where参数，否则操作失败；
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public Guid Delete(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
         {
             IFactoryContext context = new FactoryContext(DbOperate.Delete, sqlText, param);
@@ -93,44 +93,44 @@ namespace Database.Factories
             _eventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
-        ///// <summary>
-        ///// 数据库查询，返回值为查询结果第一行第一列的值
-        ///// </summary>
-        ///// <param name="userId"></param>
-        ///// <param name="name"></param>
-        ///// <param name="sqlText"></param>
-        ///// <returns></returns>
-        public Guid ExecuteScalar(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        /// <summary>
+        /// 数据库查询，返回值为查询结果第一行第一列的值
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <param name="sqlText"></param>
+        /// <returns></returns>
+        public Guid ExecuteScalar(string userId, string sqlText)
         {
-            var context = new FactoryContext(DbOperate.ExecuteScalar, sqlText, param);
+            var context = new FactoryContext(DbOperate.ExecuteScalar, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
             _eventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
-        ///// <summary>
-        ///// 数据库查询，返回值为结果集，类型为<see cref="Hashtable"/>[]
-        ///// </summary>
-        ///// <param name="userId"></param>
-        ///// <param name="name"></param>
-        ///// <param name="sqlText"></param>
-        ///// <returns></returns>
-        public Guid ExecuteReader(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        /// <summary>
+        /// 数据库查询，返回值为结果集，类型为<see cref="Hashtable"/>[]
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <param name="sqlText"></param>
+        /// <returns></returns>
+        public Guid ExecuteReader(string userId, string sqlText)
         {
-            var context = new FactoryContext(DbOperate.ExecuteReader, sqlText, param);
+            var context = new FactoryContext(DbOperate.ExecuteReader, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
             _eventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
-        ///// <summary>
-        ///// 数据库操作，返回值为受影响的记录数
-        ///// </summary>
-        ///// <param name="userId"></param>
-        ///// <param name="name"></param>
-        ///// <param name="sqlText"></param>
-        ///// <returns></returns>
-        public Guid ExecuteNoQuery(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        /// <summary>
+        /// 数据库操作，返回值为受影响的记录数
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <param name="sqlText"></param>
+        /// <returns></returns>
+        public Guid ExecuteNoQuery(string userId, string sqlText)
         {
-            var context = new FactoryContext(DbOperate.ExecuteNoQuery, sqlText, param);
+            var context = new FactoryContext(DbOperate.ExecuteNoQuery, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
             _eventHandle.OnQueueEvent(evg);
             return evg.Id;

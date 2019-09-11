@@ -91,12 +91,7 @@ namespace Core.Entities
         [Description("附加参数")]
         A
     }
-    public enum ExecuteType
-    {
-        Count,
-        Data,
-        Value
-    }
+    
     /// <summary>
     /// 数据连接策略类型枚举
     /// </summary>
@@ -133,6 +128,9 @@ namespace Core.Entities
         [Description("事务回滚")]
         Rollback
     }
+    /// <summary>
+    /// 数据适配器操作类型枚举
+    /// </summary>
     public enum AdapterOperate
     {
         [Description("查询")]

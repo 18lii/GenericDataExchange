@@ -68,13 +68,13 @@ namespace WCFService.Service
         public byte[] ExecuteNoQuery(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            var id = _dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText);
             return _dbFactory.Result(id).Compression();
         }
         public byte[] ExecuteNoQueryAsync(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            var id = _dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText);
             return id.Compression();
         }
         public byte[] ExecuteProcedure(byte[] value)
@@ -92,25 +92,25 @@ namespace WCFService.Service
         public byte[] ExecuteReader(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            var id = _dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText);
             return _dbFactory.Result(id).Compression();
         }
         public byte[] ExecuteReaderAsync(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            var id = _dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText);
             return id.Compression();
         }
         public byte[] ExecuteScalar(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            var id = _dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText);
             return _dbFactory.Result(id).Compression();
         }
         public byte[] ExecuteScalarAsync(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            var id = _dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText);
             return id.Compression();
         }
         public byte[] AdapterGet(byte[] value)
