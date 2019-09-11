@@ -20,7 +20,7 @@ namespace Core.Infrastructure
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static byte[] CompressionData(this object obj)
+        public static byte[] Compression(this object obj)
         {
             byte[] buffer;
             // 压缩            
@@ -48,7 +48,7 @@ namespace Core.Infrastructure
         /// <typeparam name="T"></typeparam>
         /// <param name="byteArray"></param>
         /// <returns></returns>
-        public static T DecompressData<T>(this byte[] byteArray)
+        public static T Decompress<T>(this byte[] byteArray)
         {
             var defLen = byteArray.Length * 2;
             using (var memoryStream = new MemoryStream(byteArray))

@@ -12,9 +12,12 @@ using WCFService.Entity;
 
 namespace WCFService
 {
+    /// <summary>
+    /// WCF提供的全部服务所需组件在此装配
+    /// </summary>
     public static class WCFServiceInitialization
     {
-        public static void Start(string[] codes)
+        public static void Initialization(string[] codes)
         {
             var kernel = new IoCKernelImpl();
             kernel.Bind<IIoCKernel>().To<IoCKernelImpl>();

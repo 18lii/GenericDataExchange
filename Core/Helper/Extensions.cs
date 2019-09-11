@@ -74,7 +74,7 @@ namespace Core.Helper
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static ConcurrentBag<ConcurrentDictionary<string, object>> ToContextParam(this IList<Hashtable> values)
+        public static ConcurrentBag<ConcurrentDictionary<string, object>> ToContextParam(this Hashtable[] values)
         {
             var bag = new ConcurrentBag<ConcurrentDictionary<string, object>>();
             foreach (var ht in values)

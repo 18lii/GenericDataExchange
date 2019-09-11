@@ -10,7 +10,7 @@ namespace Queue.Entities
     /// <summary>
     /// 队列元素模型
     /// </summary>
-    public class QueueModel : IQueueModel
+    internal class QueueModel : IQueueModel
     {
         public QueueModel() { }
         public QueueModel(string name, object item)

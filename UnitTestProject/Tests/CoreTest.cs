@@ -37,8 +37,8 @@ namespace UnitTestProject.Tests
         public void CompressionData()
         {
             var model = new TestEntity { Name = "entity", Id = 1, Visable = true };
-            buffer = model.CompressionData();
-            var entity = buffer.DecompressData<TestEntity>();
+            buffer = model.Compression();
+            var entity = buffer.Decompress<TestEntity>();
             Assert.IsInstanceOfType(entity, typeof(TestEntity));
         }
         [TestMethod]

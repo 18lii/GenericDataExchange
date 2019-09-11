@@ -12,7 +12,7 @@ using System.Data.SqlClient;
 
 namespace Database.Infrastructure
 {
-    public abstract class BaseContext : IBaseContext
+    internal abstract class BaseContext : IBaseContext
     {
         protected BaseContext(ISqlServerDatabaseUtil dbUtil, ISqlAdapterDatabaseUtil apUtil)
         {

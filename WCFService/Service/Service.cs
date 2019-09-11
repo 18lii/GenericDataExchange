@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Helper;
+using Core.Infrastructure;
+using System;
+using WCFService.Entity;
 
 namespace WCFService.Service
 {
@@ -11,74 +10,136 @@ namespace WCFService.Service
     /// </summary>
     public class DataExchangeService : IService
     {
+        private readonly DbFactoryImpl _dbFactory;
+        public DataExchangeService()
+        {
+            var kernel = new IoCKernelImpl();
+            _dbFactory = kernel.Resolve<DbFactoryImpl>();
+        }
+        
         public byte[] Select(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Get(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] SelectAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Get(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
         }
         public byte[] Insert(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Insert(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] InsertAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Insert(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
         }
         public byte[] Update(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Update(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] UpdateAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Update(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
         }
         public byte[] Delete(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Delete(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] DeleteAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Delete(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
         }
         public byte[] ExecuteNoQuery(byte[] value)
         {
-
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] ExecuteNoQueryAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
         }
         public byte[] ExecuteProcedure(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteProcedure(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] ExecuteProcedureAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteProcedure(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
         }
         public byte[] ExecuteReader(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] ExecuteReaderAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
         }
         public byte[] ExecuteScalar(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return _dbFactory.Result(id).Compression();
         }
         public byte[] ExecuteScalarAsync(byte[] value)
         {
-            throw new NotImplementedException();
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            return id.Compression();
+        }
+        public byte[] AdapterGet(byte[] value)
+        {
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Get(receiveData.UserId, receiveData.SqlText);
+            return _dbFactory.Result(id).Compression();
+        }
+        public byte[] AdapterGetAsync(byte[] value)
+        {
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Get(receiveData.UserId, receiveData.SqlText);
+            return id.Compression();
+        }
+        public byte[] AdapterSet(byte[] value)
+        {
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Set(receiveData.UserId, receiveData.SqlText, receiveData.DataSet);
+            return _dbFactory.Result(id).Compression();
+        }
+        public byte[] AdapterSetAsync(byte[] value)
+        {
+            var receiveData = value.Decompress<ReceiveData>();
+            var id = _dbFactory.Set(receiveData.UserId, receiveData.SqlText, receiveData.DataSet);
+            return id.Compression();
         }
         public byte[] Result(byte[] id)
         {
-            throw new NotImplementedException();
+            return _dbFactory.Result(id.Decompress<Guid>()).Compression();
         }
     }
 }

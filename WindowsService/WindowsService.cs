@@ -10,14 +10,12 @@ namespace WindowsService
         public WindowsService()
         {
             InitializeComponent();
-
             Host = new ServiceHost(typeof(DataExchangeService));
         }
 
         protected override void OnStart(string[] args)
         {
-
-            WCFServiceInitialization.Start(args);
+            WCFServiceInitialization.Initialization(args);
             Host.Open();
         }
 

@@ -8,6 +8,7 @@ using Queue;
 using System;
 using UnitTestProject.Infrastructure;
 using WCFService;
+using WCFService.Entity;
 
 namespace UnitTestProject.Tests
 {
@@ -42,6 +43,8 @@ namespace UnitTestProject.Tests
                 //初始化队列器依赖，服务启动
                 kernel.Resolve<Dipper>().DipBind();
                 kernel.Resolve<QueueInitialization>().PeristalticStart(new PeristalticConfiguration(connStr));
+                //获取数据工厂
+                var factory = kernel.Resolve<DbFactoryImpl>();
                 Assert.IsTrue(true);
             }
             catch (Exception e)

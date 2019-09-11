@@ -45,6 +45,10 @@ namespace WCFService.Service
         byte[] ExecuteProcedure(byte[] value);
         [OperationContract]
         byte[] ExecuteProcedureAsync(byte[] value);
+        byte[] AdapterGet(byte[] value);
+        byte[] AdapterGetAsync(byte[] value);
+        byte[] AdapterSet(byte[] value);
+        byte[] AdapterSetAsync(byte[] value);
         [OperationContract]
         byte[] Result(byte[] id);
     }

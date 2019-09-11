@@ -10,7 +10,7 @@ namespace Queue.Entities
     /// <summary>
     /// 控制信号类
     /// </summary>
-    public class QueueSignal
+    internal class QueueSignal
     {
         public QueueSignal()
 

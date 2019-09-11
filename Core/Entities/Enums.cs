@@ -98,6 +98,16 @@ namespace Core.Entities
         Value
     }
     /// <summary>
+    /// 数据连接策略类型枚举
+    /// </summary>
+    public enum PolicyType
+    {
+        [Description("ADO型")]
+        Adapter,
+        [Description("SQL型")]
+        Command
+    }
+    /// <summary>
     /// 数据库操作类型枚举
     /// </summary>
     public enum DbOperate

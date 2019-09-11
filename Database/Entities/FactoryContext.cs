@@ -12,13 +12,21 @@ namespace Database.Entities
     /// </summary>
     internal class FactoryContext : IFactoryContext
     {
-        public FactoryContext(DbOperate operate, ConcurrentBag<ConcurrentDictionary<string, object>> param, string sqlText = null)
+        public FactoryContext(AdapterOperate operate, string sqlText, DataSet dataSet = null)
+        {
+            AptOperate = operate;
+            SqlText = sqlText;
+            DataSet = dataSet;
+        }
+        public FactoryContext(DbOperate operate, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
         {
             DbOperate = operate;
             Params = param;
             SqlText = sqlText;
         }
+        public PolicyType PolicyType { get; set; }
         public DbOperate DbOperate { get; set; }
+        public AdapterOperate AptOperate { get; set; }
         public ConcurrentBag<ConcurrentDictionary<string, object>> Params { get; set; }
         public string SqlText { get; set; }
         public DataSet DataSet { get; set; }

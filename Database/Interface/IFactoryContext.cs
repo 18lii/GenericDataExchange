@@ -15,7 +15,9 @@ namespace Database.Interface
     /// </summary>
     public interface IFactoryContext
     {
+        PolicyType PolicyType { get; set; }
         DbOperate DbOperate { get; set; }
+        AdapterOperate AptOperate { get; set; }
         ConcurrentBag<ConcurrentDictionary<string, object>> Params { get; set; }
         string SqlText { get; set; }
         DataSet DataSet { get; set; }

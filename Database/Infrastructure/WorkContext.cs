@@ -1,12 +1,14 @@
-﻿using Core.Interface;
+﻿using Core.Entities;
+using Core.Interface;
 using Dapper;
 using Database.Interface;
+using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Database.Infrastructure
 {
-    public class WorkContext : BaseContext, IWorkContext
+    internal class WorkContext : BaseContext, IWorkContext
     {
         public WorkContext(ISqlServerDatabaseUtil dbUtil, ISqlAdapterDatabaseUtil apUtil) : base(dbUtil, apUtil) { }
         /// <summary>
@@ -22,36 +24,46 @@ namespace Database.Infrastructure
             var userId = e.UserId;
             var result = default(IGenericResult);
             SqlTransaction.TryAdd(id, SetConnection(userId).BeginTransaction());
-            if(context.Params != null)
+            if(context.PolicyType == PolicyType.Command)
             {
-                Parallel.ForEach(context.Params, p =>
+                if (context.Params != null)
                 {
-                    var dyParam = new DynamicParameters();
-                    foreach (var item in p)
+                    Parallel.ForEach(context.Params, p =>
                     {
-                        dyParam.Add(item.Key, item.Value);
-                    }
-                    result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText, dyParam, SqlTransaction[id]);
-                });
-            }
-            else
-            {
-                result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText, new DynamicParameters(), SqlTransaction[id]);
-            }
-            
-            var sqlLog = new StringBuilder();
-            if (result.ResultType == 0)
-            {
-                result.LogMessage = sqlLog.ToString();
-                var cr = DbCommit(userId, id);
-                if(cr.ResultType != 0)
+                        var dyParam = new DynamicParameters();
+                        foreach (var item in p)
+                        {
+                            dyParam.Add(item.Key, item.Value);
+                        }
+                        result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText, dyParam, SqlTransaction[id]);
+                    });
+                }
+                else
                 {
-                    result = cr;
+                    result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText, new DynamicParameters(), SqlTransaction[id]);
+                }
+
+                var sqlLog = new StringBuilder();
+                if (result.ResultType == 0)
+                {
+                    result.LogMessage = sqlLog.ToString();
+                    var cr = DbCommit(userId, id);
+                    if (cr.ResultType != 0)
+                    {
+                        result = cr;
+                    }
+                }
+                else
+                {
+                    result = DbRollback(userId, id);
                 }
             }
             else
             {
-                result = DbRollback(userId, id);
+                var command = new SqlCommand(context.SqlText, SqlConnection[userId], SqlTransaction[id]);
+                command.CommandTimeout = 60;
+                result = Accept(context.AptOperate, command, context.DataSet);
+                command.Dispose();
             }
             return result;
         }
