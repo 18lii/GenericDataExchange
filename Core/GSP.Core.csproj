@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreInitialization.cs" />
     <Compile Include="Dependency\DefualtDITypeAnalyticalProivder.cs" />
     <Compile Include="Dependency\DIManager.cs" />
     <Compile Include="Dependency\DITypeAnalytical.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Entities\BonyObject.cs" />
     <Compile Include="Entities\Enums.cs" />
     <Compile Include="Entities\GenericResult.cs" />
+    <Compile Include="Entities\IoCKernelImpl.cs" />
     <Compile Include="Events\GenericEventHandlers.cs" />
     <Compile Include="Helper\ExceptionMessage.cs" />
     <Compile Include="Helper\Extensions.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="Interface\IDITypeAnalytical.cs" />
     <Compile Include="Interface\IDITypeAnalyticalProvider.cs" />
     <Compile Include="Interface\IEntryContext.cs" />
+    <Compile Include="Interface\IGenericEventHandle.cs" />
     <Compile Include="Interface\IGenericResult.cs" />
     <Compile Include="Interface\IGenericEventArg.cs" />
     <Compile Include="Interface\IIoCKernel.cs" />

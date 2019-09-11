@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Database.Infrastructure
 {
-    public class Context : BaseContext, IContext
+    public class WorkContext : BaseContext, IWorkContext
     {
-        public Context(string connectionString)
-            : base(connectionString) { }
-        
+        public WorkContext(ISqlServerDatabaseUtil dbUtil, ISqlAdapterDatabaseUtil apUtil) : base(dbUtil, apUtil) { }
         /// <summary>
         /// 数据库上下文操作方法
         /// </summary>

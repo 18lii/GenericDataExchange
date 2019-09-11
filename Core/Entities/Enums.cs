@@ -123,4 +123,11 @@ namespace Core.Entities
         [Description("事务回滚")]
         Rollback
     }
+    public enum AdapterOperate
+    {
+        [Description("查询")]
+        Get,
+        [Description("更改")]
+        Set
+    }
 }

@@ -3,10 +3,7 @@ using Core.Interface;
 using Database.Interface;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace Database.Entities
 {
@@ -24,6 +21,7 @@ namespace Database.Entities
         public DbOperate DbOperate { get; set; }
         public ConcurrentBag<ConcurrentDictionary<string, object>> Params { get; set; }
         public string SqlText { get; set; }
+        public DataSet DataSet { get; set; }
 
         public event Action<IGenericResult> ModifyEvent;
         public void OnModifyEvent(IGenericResult e)

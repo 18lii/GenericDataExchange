@@ -6,15 +6,15 @@ namespace Core.Events
     /// <summary>
     /// 全局通用队列入列事件类
     /// </summary>
-    public static class GenericEventHandle
+    internal class GenericEventHandle : IGenericEventHandle
     {
-        private static event Action<object> GenericEvent;
-        private static event Func<Guid, IGenericResult> GenericResultEvent;//绑定数据库提交事件
-        public static void Register(Action<object> m)
+        private event Action<object> GenericEvent;
+        private event Func<Guid, IGenericResult> GenericResultEvent;//绑定数据库提交事件
+        public void Register(Action<object> m)
         {
             GenericEvent += m;
         }
-        public static bool OnQueueEvent(object o)
+        public bool OnQueueEvent(object o)
         {
             try
             {
@@ -28,11 +28,11 @@ namespace Core.Events
 
         }
 
-        public static void Register(Func<Guid, IGenericResult> m)
+        public void Register(Func<Guid, IGenericResult> m)
         {
             GenericResultEvent += m;
         }
-        public static IGenericResult OnResultEvent(Guid id)
+        public IGenericResult OnResultEvent(Guid id)
         {
             return GenericResultEvent.Invoke(id);
         }
@@ -41,10 +41,10 @@ namespace Core.Events
     /// 队列专用，事务处理事件类，无返回值事件
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GenericEventHandle<T>
+    internal class GenericEventHandle<T> : IGenericEventHandle<T>
     {
         private event Action<T> GenericEvent;
-        public GenericEventHandle<T> Register(Action<T> m)
+        public IGenericEventHandle<T> Register(Action<T> m)
         {
             GenericEvent += m;
             return this;
@@ -63,10 +63,10 @@ namespace Core.Events
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="R"></typeparam>
-    public class GenericEventHandle<T, R>
+    internal class GenericEventHandle<T, R> : IGenericEventHandle<T, R>
     {
         private event Func<T, R> GenericEvent;
-        public GenericEventHandle<T, R> Register(Func<T, R> m)
+        public IGenericEventHandle<T, R> Register(Func<T, R> m)
         {
             GenericEvent += m;
             return this;

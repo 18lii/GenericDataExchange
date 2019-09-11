@@ -1,11 +1,7 @@
 ﻿using Core.Interface;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Database.Interface
 {
@@ -14,6 +10,7 @@ namespace Database.Interface
     /// </summary>
     public interface IBaseContext
     {
+        string ConnectionString { get; set; }
         ConcurrentDictionary<string, SqlConnection> SqlConnection { get; set; }
         ConcurrentDictionary<Guid, SqlTransaction> SqlTransaction { get; set; }
         IGenericResult DbCommit(string userId, Guid id);

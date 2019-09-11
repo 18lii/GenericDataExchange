@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\CoreTest.cs" />
     <Compile Include="Tests\DatabaseTest.cs" />
+    <Compile Include="Tests\GlobalTest.cs" />
     <Compile Include="Tests\QueueTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +65,10 @@
     <ProjectReference Include="..\Core\GSP.Core.csproj">
       <Project>{BAA1BC30-4A51-40A0-B074-7B5C5A556F9D}</Project>
       <Name>GSP.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Database\GSP.Database.csproj">
+      <Project>{B934EE7D-43BC-445B-B722-5D9A41481B43}</Project>
+      <Name>GSP.Database</Name>
     </ProjectReference>
     <ProjectReference Include="..\Queue\GSP.Queue.csproj">
       <Project>{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}</Project>

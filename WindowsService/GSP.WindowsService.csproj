@@ -94,14 +94,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\GSP.Core.csproj">
-      <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
-      <Name>GSP.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Queue\GSP.Queue.csproj">
-      <Project>{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}</Project>
-      <Name>GSP.Queue</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WCFService\GSP.WCFService.csproj">
       <Project>{273439b1-53ff-48a7-89aa-42632039bb5b}</Project>
       <Name>GSP.WCFService</Name>

@@ -61,6 +61,5 @@ namespace Database.Util
             return new GenericResultImpl(ResultType.Success, tb);
         }
         #endregion
-
     }
 }

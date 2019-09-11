@@ -7,25 +7,21 @@ using Database.Interface;
 using Database.Util;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Database.Infrastructure
 {
     public abstract class BaseContext : IBaseContext
     {
-        protected BaseContext(string connectionString)
+        protected BaseContext(ISqlServerDatabaseUtil dbUtil, ISqlAdapterDatabaseUtil apUtil)
         {
-            ConnectionString = connectionString;
+            _dbUtil = dbUtil;
+            _apUtil = apUtil;
             SqlConnection = new ConcurrentDictionary<string, SqlConnection>();
             SqlTransaction = new ConcurrentDictionary<Guid, SqlTransaction>();
-            DbUtil = new SqlServerDatabaseUtil();
         }
-        private string ConnectionString { get; set; }
+        public string ConnectionString { get; set; }
         protected SqlConnection SetConnection(string userId)
         {
             SqlConnection.TryAdd(userId, new SqlConnection(ConnectionString));
@@ -37,7 +33,8 @@ namespace Database.Infrastructure
         }
         public ConcurrentDictionary<string, SqlConnection> SqlConnection { get; set; }
         public ConcurrentDictionary<Guid, SqlTransaction> SqlTransaction { get; set; }
-        private SqlServerDatabaseUtil DbUtil { get; }
+        private readonly ISqlServerDatabaseUtil _dbUtil;
+        private readonly ISqlAdapterDatabaseUtil _apUtil;
         /// <summary>
         /// 数据库提交方法
         /// </summary>
@@ -49,21 +46,33 @@ namespace Database.Infrastructure
             switch (operate)
             {
                 case DbOperate.Select:
-                    return DbUtil.ExecuteReader(connection, sqlText, param, transaction);
+                    return _dbUtil.ExecuteReader(connection, sqlText, param, transaction);
                 case DbOperate.Insert:
-                    return DbUtil.ExecuteNoQuery(connection, sqlText, param, transaction); ;
+                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction); ;
                 case DbOperate.Update:
-                    return DbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
                 case DbOperate.Delete:
-                    return DbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
                 case DbOperate.ExecuteScalar:
-                    return DbUtil.ExecuteScalar(connection, sqlText, param, transaction);
+                    return _dbUtil.ExecuteScalar(connection, sqlText, param, transaction);
                 case DbOperate.ExecuteReader:
-                    return DbUtil.ExecuteReader(connection, sqlText, param, transaction);
+                    return _dbUtil.ExecuteReader(connection, sqlText, param, transaction);
                 case DbOperate.ExecuteNoQuery:
-                    return DbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
                 case DbOperate.ExecuteProcedure:
-                    return DbUtil.ExecuteProcedure(connection, sqlText, param, transaction);
+                    return _dbUtil.ExecuteProcedure(connection, sqlText, param, transaction);
+                default:
+                    return new GenericResultImpl(ResultType.IllegalOperation, ResultType.IllegalOperation.ToDescription(), "错误的数据库操作类型。");
+            }
+        }
+        public IGenericResult Accept(AdapterOperate operate, SqlCommand command, DataSet dataSet = null)
+        {
+            switch (operate)
+            {
+                case AdapterOperate.Get:
+                    return _apUtil.Get(command);
+                case AdapterOperate.Set:
+                    return _apUtil.Set(command, dataSet);
                 default:
                     return new GenericResultImpl(ResultType.IllegalOperation, ResultType.IllegalOperation.ToDescription(), "错误的数据库操作类型。");
             }

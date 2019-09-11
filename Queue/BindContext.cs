@@ -16,7 +16,7 @@ namespace Queue
      * 2019-9-5  
      * 线程绑定器
      * 使用<see cref="IBindContext"/>公共接口，于外部配置线程所必须的类型绑定及事件处理方法绑定
-     * 于外部初始化方法中一次性调用<see cref="Initialization.PeristalticStart(IPeristalticConfiguration)"/>
+     * 于外部初始化方法中一次性调用<see cref="QueueInitialization.PeristalticStart(IPeristalticConfiguration)"/>
      * 以启动线程
      * 
      **/
@@ -33,8 +33,11 @@ namespace Queue
         public ConcurrentDictionary<string, Action<WaitHandle[], ConcurrentQueue<QueueModel>>> Actions { get; }
         public ConcurrentDictionary<string, bool> Register { get; }
         public ConcurrentDictionary<Guid, IGenericResult> Result { get; }
-        public IContext DbContext { get; }
-        public PeristalticContext(IContext dbContext)
+        private IGenericEventHandle<IGenericEventArg<IFactoryContext>> _actionHandle;
+        private IGenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult> _funcHandle;
+        public IWorkContext DbContext { get; }
+        public PeristalticContext
+            (IGenericEventHandle<IGenericEventArg<IFactoryContext>> actionHandle, IGenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult> funcHandle, IWorkContext dbContext)
         {
             LoaderSignal = new WaitHandle[2] { new AutoResetEvent(false), new ManualResetEvent(false)};
             Troops = new ConcurrentQueue<QueueModel>();
@@ -43,6 +46,8 @@ namespace Queue
             Actions = new ConcurrentDictionary<string, Action<WaitHandle[], ConcurrentQueue<QueueModel>>>();
             Register = new ConcurrentDictionary<string, bool>();
             Result = new ConcurrentDictionary<Guid, IGenericResult>();
+            _actionHandle = actionHandle;
+            _funcHandle = funcHandle;
             DbContext = dbContext;
             Action<WaitHandle[], ConcurrentQueue<QueueModel>> result = ((signal, queue) =>//结果线程委托
             {
@@ -52,7 +57,7 @@ namespace Queue
                     queue,
                     new ActionEventWorker<IGenericEventArg<IFactoryContext>>
                     (
-                        new GenericEventHandle<IGenericEventArg<IFactoryContext>>().Register
+                        actionHandle.Register
                         (
                             r =>
                             {
@@ -81,7 +86,7 @@ namespace Queue
                     queue,
                     new FunctionEventWorker<IFactoryContext, IGenericResult>
                     (
-                        new GenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult>().Register
+                        _funcHandle.Register
                         (
                             DbContext.Activing
                         ),
@@ -104,7 +109,7 @@ namespace Queue
                     queue, //队列
                     new FunctionEventWorker<IFactoryContext, IGenericResult>//内部处理事件
                     (
-                        new GenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult>().Register//核心事件
+                        _funcHandle.Register//核心事件
                         (
                             DbContext.Activing//数据库工厂处理方法
                         ),

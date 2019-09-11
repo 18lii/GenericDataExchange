@@ -44,19 +44,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\IoCKernelImpl.cs" />
     <Compile Include="Entities\DatabaseLogMessage.cs" />
     <Compile Include="Entities\FactoryContext.cs" />
     <Compile Include="Entities\GenericEventArgs.cs" />
     <Compile Include="Entities\GenericResultImpl.cs" />
     <Compile Include="Factories\DatabaseFactory.cs" />
     <Compile Include="Infrastructure\BaseContext.cs" />
-    <Compile Include="Infrastructure\Context.cs" />
+    <Compile Include="Infrastructure\WorkContext.cs" />
+    <Compile Include="DatabaseInitialization.cs" />
+    <Compile Include="Interface\ISqlAdapterDatabaseUtil.cs" />
     <Compile Include="Interface\IBaseContext.cs" />
-    <Compile Include="Interface\IContext.cs" />
+    <Compile Include="Interface\IWorkContext.cs" />
     <Compile Include="Interface\IFactoryContext.cs" />
     <Compile Include="Interface\IGenericParameter.cs" />
     <Compile Include="Interface\ISqlServerDatabaseUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\SqlAdapterDatabaseUtil.cs" />
     <Compile Include="Util\SqlServerDatabaseUtil.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,6 @@
-﻿using Queue;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using System.ServiceProcess;
 using WCFService.Service;
-using Core.Infrastructure;
 using WCFService;
 
 namespace WindowsService
@@ -12,12 +10,14 @@ namespace WindowsService
         public WindowsService()
         {
             InitializeComponent();
+
             Host = new ServiceHost(typeof(DataExchangeService));
         }
 
         protected override void OnStart(string[] args)
         {
-            Initialization.PeristalticStart(new PeristalticConfiguration(args));
+
+            WCFServiceInitialization.Start(args);
             Host.Open();
         }
 

@@ -20,21 +20,21 @@ namespace Queue.EventContext
     /// </summary>
     internal class FunctionEventWorker<T, R>
     {
-        private GenericEventHandle<IGenericEventArg<T>, R> Handler { get; }
+        private IGenericEventHandle<IGenericEventArg<T>, R> Handler { get; }
         private AsyncCallback Callback { get; }
         private WaitHandle[] LoaderSignal { get; }
         private ConcurrentQueue<QueueModel> Troops { get; }
 
-        public FunctionEventWorker(GenericEventHandle<IGenericEventArg<T>, R> handler)
+        public FunctionEventWorker(IGenericEventHandle<IGenericEventArg<T>, R> handler)
         {
             Handler = handler;
         }
-        public FunctionEventWorker(GenericEventHandle<IGenericEventArg<T>, R> handler, AsyncCallback callback)
+        public FunctionEventWorker(IGenericEventHandle<IGenericEventArg<T>, R> handler, AsyncCallback callback)
             : this(handler)
         {
             Callback = callback;
         }
-        public FunctionEventWorker(GenericEventHandle<IGenericEventArg<T>, R> handler, WaitHandle[] loaderSignal, ConcurrentQueue<QueueModel> troops)
+        public FunctionEventWorker(IGenericEventHandle<IGenericEventArg<T>, R> handler, WaitHandle[] loaderSignal, ConcurrentQueue<QueueModel> troops)
             : this(handler)
         {
             LoaderSignal = loaderSignal;

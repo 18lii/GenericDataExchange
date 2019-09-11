@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace Database.Interface
 {
     /// <summary>
-    /// 数据库操作工厂接口
+    /// 数据库操作上下文接口
     /// </summary>
-    public interface IContext : IBaseContext
+    public interface IWorkContext : IBaseContext
     {
         IGenericResult Activing(IGenericEventArg<IFactoryContext> e);
     }

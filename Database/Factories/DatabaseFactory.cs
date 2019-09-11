@@ -1,21 +1,19 @@
 ﻿using Core.Entities;
-using Core.Events;
 using Core.Interface;
 using Database.Entities;
 using Database.Interface;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Database.Factories
 {
     public abstract class DatabaseFactory
     {
+        private readonly IGenericEventHandle _eventHandle;
+        public DatabaseFactory(IGenericEventHandle eventHandle)
+        {
+            _eventHandle = eventHandle;
+        }
         /// <summary>
         /// 数据库插入/修改事件，成功则触发
         /// </summary>
@@ -32,7 +30,7 @@ namespace Database.Factories
         /// <returns></returns>
         public IGenericResult Result(Guid id)
         {
-            return GenericEventHandle.OnResultEvent(id);
+            return _eventHandle.OnResultEvent(id);
         }
         /// <summary>
         /// 数据库记录获取
@@ -44,7 +42,7 @@ namespace Database.Factories
         {
             var context = new FactoryContext(DbOperate.Select, param, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            GenericEventHandle.OnQueueEvent(evg);
+            _eventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
 

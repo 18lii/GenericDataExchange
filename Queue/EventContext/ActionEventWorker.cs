@@ -22,13 +22,13 @@ namespace Queue.EventContext
     /// </summary>
     internal class ActionEventWorker<T>
     {
-        private GenericEventHandle<T> Handler { get; }
+        private IGenericEventHandle<T> Handler { get; }
         private AsyncCallback Callback { get; }
-        public ActionEventWorker(GenericEventHandle<T> handler)
+        public ActionEventWorker(IGenericEventHandle<T> handler)
         {
             Handler = handler;
         }
-        public ActionEventWorker(GenericEventHandle<T> handler, AsyncCallback callback)
+        public ActionEventWorker(IGenericEventHandle<T> handler, AsyncCallback callback)
             : this(handler)
         {
             Callback = callback;
