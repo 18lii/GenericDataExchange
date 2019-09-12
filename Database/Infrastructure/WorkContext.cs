@@ -2,6 +2,7 @@
 using Core.Interface;
 using Dapper;
 using Database.Interface;
+using DatabaseFactory.Interface;
 using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,12 +36,12 @@ namespace Database.Infrastructure
                         {
                             dyParam.Add(item.Key, item.Value);
                         }
-                        result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText, dyParam, SqlTransaction[id]);
+                        result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText[0], dyParam, SqlTransaction[id]);
                     });
                 }
                 else
                 {
-                    result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText, new DynamicParameters(), SqlTransaction[id]);
+                    result = Accept(SqlConnection[userId], context.DbOperate, context.SqlText[0], new DynamicParameters(), SqlTransaction[id]);
                 }
 
                 var sqlLog = new StringBuilder();
@@ -60,10 +61,26 @@ namespace Database.Infrastructure
             }
             else
             {
-                var command = new SqlCommand(context.SqlText, SqlConnection[userId], SqlTransaction[id]);
-                command.CommandTimeout = 60;
-                result = Accept(context.AptOperate, command, context.DataSet);
-                command.Dispose();
+                for(var i= 0; i < context.SqlText.Length; i++)
+                {
+                    var command = new SqlCommand(context.SqlText[i], SqlConnection[userId], SqlTransaction[id]);
+                    command.CommandTimeout = 60;
+                    switch (context.AptOperate)
+                    {
+                        case AdapterOperate.Get:
+                            result = Accept(context.AptOperate, command);
+                            break;
+                        case AdapterOperate.Set:
+                            result = Accept(context.AptOperate, command, context.DataSet[i]);
+                            break;
+                    }
+                    command.Dispose();
+                }
+                var commitResult = DbCommit(userId, id);
+                if (commitResult.ResultType != 0)
+                {
+                    result = commitResult;
+                };
             }
             return result;
         }

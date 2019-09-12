@@ -6,15 +6,15 @@ namespace Core.Events
     /// <summary>
     /// 全局通用队列入列事件类
     /// </summary>
-    internal class GenericEventHandle : IGenericEventHandle
+    public static class GenericEventHandle
     {
-        private event Action<object> GenericEvent;
-        private event Func<Guid, IGenericResult> GenericResultEvent;//绑定数据库提交事件
-        public void Register(Action<object> m)
+        private static event Action<object> GenericEvent;
+        private static event Func<Guid, IGenericResult> GenericResultEvent;//绑定数据库提交事件
+        public static void Register(Action<object> m)
         {
             GenericEvent += m;
         }
-        public bool OnQueueEvent(object o)
+        public static bool OnQueueEvent(object o)
         {
             try
             {
@@ -28,11 +28,11 @@ namespace Core.Events
 
         }
 
-        public void Register(Func<Guid, IGenericResult> m)
+        public static void Register(Func<Guid, IGenericResult> m)
         {
             GenericResultEvent += m;
         }
-        public IGenericResult OnResultEvent(Guid id)
+        public static IGenericResult OnResultEvent(Guid id)
         {
             return GenericResultEvent.Invoke(id);
         }

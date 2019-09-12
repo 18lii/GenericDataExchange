@@ -1,6 +1,8 @@
 ﻿using Core.Helper;
 using Core.Infrastructure;
 using System;
+using TransparentAgent.Contract;
+using TransparentAgent.Interface;
 using WCFService.Entity;
 
 namespace WCFService.Service
@@ -16,24 +18,23 @@ namespace WCFService.Service
             var kernel = new IoCKernelImpl();
             _dbFactory = kernel.Resolve<DbFactoryImpl>();
         }
-        
         public byte[] Select(byte[] value)
         {
-            var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.Get(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
-            return _dbFactory.Result(id).Compression();
+            var receiveData = value.Decompress<IContractData>();
+            var result = _dbFactory.Result(_dbFactory.Get(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam()));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] SelectAsync(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.Get(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
+            var id =_dbFactory.Get(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
             return id.Compression();
         }
         public byte[] Insert(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.Insert(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.Insert(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam()));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] InsertAsync(byte[] value)
         {
@@ -44,8 +45,8 @@ namespace WCFService.Service
         public byte[] Update(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.Update(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.Update(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam()));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] UpdateAsync(byte[] value)
         {
@@ -56,8 +57,8 @@ namespace WCFService.Service
         public byte[] Delete(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.Delete(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.Delete(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam()));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] DeleteAsync(byte[] value)
         {
@@ -68,8 +69,8 @@ namespace WCFService.Service
         public byte[] ExecuteNoQuery(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText);
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.ExecuteNoQuery(receiveData.UserId, receiveData.SqlText));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] ExecuteNoQueryAsync(byte[] value)
         {
@@ -80,8 +81,8 @@ namespace WCFService.Service
         public byte[] ExecuteProcedure(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteProcedure(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam());
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.ExecuteProcedure(receiveData.UserId, receiveData.SqlText, receiveData.Param.ToContextParam()));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] ExecuteProcedureAsync(byte[] value)
         {
@@ -91,9 +92,9 @@ namespace WCFService.Service
         }
         public byte[] ExecuteReader(byte[] value)
         {
-            var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText);
-            return _dbFactory.Result(id).Compression();
+            var receiveData = value.Decompress<IContractData>();
+            var result = _dbFactory.Result(_dbFactory.ExecuteReader(receiveData.UserId, receiveData.SqlText));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] ExecuteReaderAsync(byte[] value)
         {
@@ -104,8 +105,8 @@ namespace WCFService.Service
         public byte[] ExecuteScalar(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText);
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.ExecuteScalar(receiveData.UserId, receiveData.SqlText));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] ExecuteScalarAsync(byte[] value)
         {
@@ -116,8 +117,8 @@ namespace WCFService.Service
         public byte[] AdapterGet(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.Get(receiveData.UserId, receiveData.SqlText);
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.Get(receiveData.UserId, receiveData.SqlText));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] AdapterGetAsync(byte[] value)
         {
@@ -128,8 +129,8 @@ namespace WCFService.Service
         public byte[] AdapterSet(byte[] value)
         {
             var receiveData = value.Decompress<ReceiveData>();
-            var id = _dbFactory.Set(receiveData.UserId, receiveData.SqlText, receiveData.DataSet);
-            return _dbFactory.Result(id).Compression();
+            var result = _dbFactory.Result(_dbFactory.Set(receiveData.UserId, receiveData.SqlText, receiveData.DataSet));
+            return new ServiceResult((int)result.ResultType, result.Message, result.LogMessage, result.AppendData).Compression();
         }
         public byte[] AdapterSetAsync(byte[] value)
         {

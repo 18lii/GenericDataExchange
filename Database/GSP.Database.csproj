@@ -49,14 +49,12 @@
     <Compile Include="Entities\FactoryContext.cs" />
     <Compile Include="Entities\GenericEventArgs.cs" />
     <Compile Include="Entities\GenericResultImpl.cs" />
-    <Compile Include="Factories\DatabaseFactory.cs" />
     <Compile Include="Infrastructure\BaseContext.cs" />
     <Compile Include="Infrastructure\WorkContext.cs" />
     <Compile Include="DatabaseInitialization.cs" />
     <Compile Include="Interface\ISqlAdapterDatabaseUtil.cs" />
     <Compile Include="Interface\IBaseContext.cs" />
     <Compile Include="Interface\IWorkContext.cs" />
-    <Compile Include="Interface\IFactoryContext.cs" />
     <Compile Include="Interface\IGenericParameter.cs" />
     <Compile Include="Interface\ISqlServerDatabaseUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -71,6 +69,10 @@
     <ProjectReference Include="..\Core\GSP.Core.csproj">
       <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
       <Name>GSP.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseFactory.csproj">
+      <Project>{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}</Project>
+      <Name>GSP.DatabaseFactory</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

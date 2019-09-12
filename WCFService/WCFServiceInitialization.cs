@@ -1,13 +1,8 @@
 ﻿using Core;
 using Core.Interface;
 using Database;
-using Database.Interface;
+using DatabaseFactory.Interface;
 using Queue;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WCFService.Entity;
 
 namespace WCFService
@@ -17,13 +12,13 @@ namespace WCFService
     /// </summary>
     public static class WCFServiceInitialization
     {
+        
         public static void Initialization(string[] codes)
         {
             var kernel = new IoCKernelImpl();
             kernel.Bind<IIoCKernel>().To<IoCKernelImpl>();
             var core = kernel.Resolve<CoreInitialization>();
             //初始化核心入列事件依赖
-            core.Initialization();
             //初始化核心无返回值消息处理事件依赖
             core.Initialization<IGenericEventArg<IFactoryContext>>();
             //初始化核心有返回值消息处理事件依赖

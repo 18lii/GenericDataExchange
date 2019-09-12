@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
-using TransparentAgent;
 using TransparentAgent.Interface;
 
-namespace WCFService.Entity
+namespace TransparentAgent.Contract
 {
     [Serializable]
-    public class ReceiveData : IContractData
+    public class ContractData : IContractData
     {
         public string UserId { get; set; }
         public string[] SqlText { get; set; }

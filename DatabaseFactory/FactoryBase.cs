@@ -1,20 +1,16 @@
 ﻿using Core.Entities;
+using Core.Events;
 using Core.Interface;
-using Database.Entities;
-using Database.Interface;
+using DatabaseFactory.Entity;
+using DatabaseFactory.Interface;
 using System;
 using System.Collections.Concurrent;
 using System.Data;
 
-namespace Database.Factories
+namespace DatabaseFactory
 {
-    public abstract class DatabaseFactory
+    public abstract class FactoryBase
     {
-        private readonly IGenericEventHandle _eventHandle;
-        public DatabaseFactory(IGenericEventHandle eventHandle)
-        {
-            _eventHandle = eventHandle;
-        }
         /// <summary>
         /// 数据库插入/修改事件，成功则触发
         /// </summary>
@@ -31,18 +27,18 @@ namespace Database.Factories
         /// <returns></returns>
         public IGenericResult Result(Guid id)
         {
-            return _eventHandle.OnResultEvent(id);
+            return GenericEventHandle.OnResultEvent(id);
         }
         /// <summary>
         /// 数据库记录获取
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="param"></param>
-        public Guid Get(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        public Guid Get(string userId, string[] sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
         {
-            var context = new FactoryContext(DbOperate.Select, sqlText, param);
+            var context = new FactoryContext(PolicyType.Command, DbOperate.Select, sqlText, param);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
         /// <summary>
@@ -52,12 +48,12 @@ namespace Database.Factories
         /// <param name="param"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public Guid Insert(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        public Guid Insert(string userId, string[] sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
         {
-            var context = new FactoryContext(DbOperate.Insert, sqlText, param);
+            var context = new FactoryContext(PolicyType.Command, DbOperate.Insert, sqlText, param);
             //context.ModifyEvent += callback;
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
 
@@ -69,12 +65,12 @@ namespace Database.Factories
         /// <param name="param"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public Guid Update(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        public Guid Update(string userId, string[] sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
         {
-            var context = new FactoryContext(DbOperate.Update, sqlText, param);
+            var context = new FactoryContext(PolicyType.Command, DbOperate.Update, sqlText, param);
             //context.ModifyEvent += callback;
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
 
@@ -85,12 +81,12 @@ namespace Database.Factories
         /// <param name="name"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public Guid Delete(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        public Guid Delete(string userId, string[] sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
         {
-            IFactoryContext context = new FactoryContext(DbOperate.Delete, sqlText, param);
+            IFactoryContext context = new FactoryContext(PolicyType.Command, DbOperate.Delete, sqlText, param);
             //context.ModifyEvent += callback;
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
         /// <summary>
@@ -100,11 +96,11 @@ namespace Database.Factories
         /// <param name="name"></param>
         /// <param name="sqlText"></param>
         /// <returns></returns>
-        public Guid ExecuteScalar(string userId, string sqlText)
+        public Guid ExecuteScalar(string userId, string[] sqlText)
         {
-            var context = new FactoryContext(DbOperate.ExecuteScalar, sqlText);
+            var context = new FactoryContext(PolicyType.Command, DbOperate.ExecuteScalar, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
         /// <summary>
@@ -114,11 +110,11 @@ namespace Database.Factories
         /// <param name="name"></param>
         /// <param name="sqlText"></param>
         /// <returns></returns>
-        public Guid ExecuteReader(string userId, string sqlText)
+        public Guid ExecuteReader(string userId, string[] sqlText)
         {
-            var context = new FactoryContext(DbOperate.ExecuteReader, sqlText);
+            var context = new FactoryContext(PolicyType.Command, DbOperate.ExecuteReader, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
         /// <summary>
@@ -128,11 +124,11 @@ namespace Database.Factories
         /// <param name="name"></param>
         /// <param name="sqlText"></param>
         /// <returns></returns>
-        public Guid ExecuteNoQuery(string userId, string sqlText)
+        public Guid ExecuteNoQuery(string userId, string[] sqlText)
         {
-            var context = new FactoryContext(DbOperate.ExecuteNoQuery, sqlText);
+            var context = new FactoryContext(PolicyType.Command, DbOperate.ExecuteNoQuery, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
         ///// <summary>
@@ -141,11 +137,11 @@ namespace Database.Factories
         ///// <param name="userId"></param>
         ///// <param name="procedureName"></param>
         ///// <returns></returns>
-        public Guid ExecuteProcedure(string userId, string sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
+        public Guid ExecuteProcedure(string userId, string[] sqlText, ConcurrentBag<ConcurrentDictionary<string, object>> param)
         {
-            var context = new FactoryContext(DbOperate.ExecuteProcedure, sqlText, param);
+            var context = new FactoryContext(PolicyType.Command, DbOperate.ExecuteProcedure, sqlText, param);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
         /// <summary>
@@ -155,11 +151,11 @@ namespace Database.Factories
         /// <param name="sqlText"></param>
         /// <param name="dataSet"></param>
         /// <returns></returns>
-        public Guid Get(string userId, string sqlText)
+        public Guid Get(string userId, string[] sqlText)
         {
-            var context = new FactoryContext(AdapterOperate.Get, sqlText);
+            var context = new FactoryContext(PolicyType.Adapter, AdapterOperate.Get, sqlText);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
         }
         /// <summary>
@@ -168,16 +164,12 @@ namespace Database.Factories
         /// <param name="userId"></param>
         /// <param name="sqlText"></param>
         /// <returns></returns>
-        public Guid Set(string userId, string sqlText, DataSet dataSet)
+        public Guid Set(string userId, string[] sqlText, DataSet[] dataSet)
         {
-            var context = new FactoryContext(AdapterOperate.Get, sqlText, dataSet);
+            var context = new FactoryContext(PolicyType.Adapter, AdapterOperate.Get, sqlText, dataSet);
             var evg = new GenericEventArgs<IFactoryContext>(_peristalticName, userId, context);
-            _eventHandle.OnQueueEvent(evg);
+            GenericEventHandle.OnQueueEvent(evg);
             return evg.Id;
-        }
-        public string Test(int value)
-        {
-            return "这是测试" + value.ToString();
         }
     }
 }

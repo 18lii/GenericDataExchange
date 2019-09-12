@@ -58,6 +58,10 @@
       <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
       <Name>GSP.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseFactory.csproj">
+      <Project>{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}</Project>
+      <Name>GSP.DatabaseFactory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Database\GSP.Database.csproj">
       <Project>{b934ee7d-43bc-445b-b722-5d9a41481b43}</Project>
       <Name>GSP.Database</Name>
@@ -65,6 +69,10 @@
     <ProjectReference Include="..\Queue\GSP.Queue.csproj">
       <Project>{a0abd798-dd5b-43b4-befd-8dc9550bacd2}</Project>
       <Name>GSP.Queue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TransparentAgent\GSP.TransparentAgent.csproj">
+      <Project>{d2874c00-a880-4029-b0ff-de1d7cc30632}</Project>
+      <Name>GSP.TransparentAgent</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

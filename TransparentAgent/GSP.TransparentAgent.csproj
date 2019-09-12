@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BAA1BC30-4A51-40A0-B074-7B5C5A556F9D}</ProjectGuid>
+    <ProjectGuid>{D2874C00-A880-4029-B0FF-DE1D7CC30632}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core</RootNamespace>
-    <AssemblyName>Core</AssemblyName>
+    <RootNamespace>TransparentAgent</RootNamespace>
+    <AssemblyName>TransparentAgent</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,43 +33,19 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreInitialization.cs" />
-    <Compile Include="Dependency\DefualtDITypeAnalyticalProivder.cs" />
-    <Compile Include="Dependency\DIManager.cs" />
-    <Compile Include="Dependency\DITypeAnalytical.cs" />
-    <Compile Include="Dependency\IoCKernel.cs" />
-    <Compile Include="Dependency\IoCContext.cs" />
-    <Compile Include="Entities\BonyObject.cs" />
-    <Compile Include="Entities\Enums.cs" />
-    <Compile Include="Entities\GenericResult.cs" />
-    <Compile Include="Entities\IoCKernelImpl.cs" />
-    <Compile Include="Events\GenericEventHandlers.cs" />
-    <Compile Include="Helper\ExceptionMessage.cs" />
-    <Compile Include="Helper\Extensions.cs" />
-    <Compile Include="Ignition\Entry.cs" />
-    <Compile Include="Ignition\Timespan.cs" />
-    <Compile Include="Infrastructure\CompressionExtensions.cs" />
-    <Compile Include="Infrastructure\DESCryptExtensions.cs" />
-    <Compile Include="Infrastructure\XmlUtil.cs" />
-    <Compile Include="Interface\IDITypeAnalytical.cs" />
-    <Compile Include="Interface\IDITypeAnalyticalProvider.cs" />
-    <Compile Include="Interface\IEntryContext.cs" />
-    <Compile Include="Interface\IGenericEventHandle.cs" />
-    <Compile Include="Interface\IGenericResult.cs" />
-    <Compile Include="Interface\IGenericEventArg.cs" />
-    <Compile Include="Interface\IIoCKernel.cs" />
-    <Compile Include="Interface\ILogMessage.cs" />
-    <Compile Include="Interface\ITimespan.cs" />
+    <Compile Include="Contract\ContractData.cs" />
+    <Compile Include="Contract\ServiceResult.cs" />
+    <Compile Include="Interface\IDataContract.cs" />
+    <Compile Include="Interface\IServiceResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,11 +1,13 @@
 ﻿using Core.Helper;
 using Core.Interface;
+using System;
 
 namespace Core.Entities
 {
-    /// <summary>
-    /// 通用返回值抽象类
-    /// </summary>
+    ///// <summary>
+    ///// 通用返回值抽象类
+    ///// </summary>
+    [Serializable]
     public abstract class GenericResult : IGenericResult
     {
         public GenericResult(ResultType resultType)

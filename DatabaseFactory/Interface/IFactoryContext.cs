@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Database.Interface
+namespace DatabaseFactory.Interface
 {
     /// <summary>
     /// 数据库工厂上下文接口
@@ -19,8 +18,8 @@ namespace Database.Interface
         DbOperate DbOperate { get; set; }
         AdapterOperate AptOperate { get; set; }
         ConcurrentBag<ConcurrentDictionary<string, object>> Params { get; set; }
-        string SqlText { get; set; }
-        DataSet DataSet { get; set; }
+        string[] SqlText { get; set; }
+        DataSet[] DataSet { get; set; }
         event Action<IGenericResult> ModifyEvent;
         void OnModifyEvent(IGenericResult e);
     }

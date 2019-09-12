@@ -1,6 +1,7 @@
 ﻿using Core.Events;
 using Core.Interface;
 using Database.Interface;
+using DatabaseFactory.Interface;
 using Queue.Entities;
 using Queue.EventContext;
 using Queue.Interface;
@@ -35,9 +36,9 @@ namespace Queue
         public ConcurrentDictionary<Guid, IGenericResult> Result { get; }
         private IGenericEventHandle<IGenericEventArg<IFactoryContext>> _actionHandle;
         private IGenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult> _funcHandle;
-        public IWorkContext DbContext { get; }
+        public IWorkContext DbContext { get; set; }
         public PeristalticContext
-            (IGenericEventHandle<IGenericEventArg<IFactoryContext>> actionHandle, IGenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult> funcHandle, IWorkContext dbContext)
+            (IGenericEventHandle<IGenericEventArg<IFactoryContext>> actionHandle, IGenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult> funcHandle)
         {
             LoaderSignal = new WaitHandle[2] { new AutoResetEvent(false), new ManualResetEvent(false)};
             Troops = new ConcurrentQueue<QueueModel>();
@@ -48,7 +49,6 @@ namespace Queue
             Result = new ConcurrentDictionary<Guid, IGenericResult>();
             _actionHandle = actionHandle;
             _funcHandle = funcHandle;
-            DbContext = dbContext;
             Action<WaitHandle[], ConcurrentQueue<QueueModel>> result = ((signal, queue) =>//结果线程委托
             {
                 new QueueExecuter<IGenericEventArg<IFactoryContext>>
