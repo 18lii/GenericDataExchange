@@ -42,17 +42,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindContext.cs" />
-    <Compile Include="Diper.cs" />
+    <Compile Include="Entities\Executer.cs" />
     <Compile Include="Entities\GenericEventArgs.cs" />
     <Compile Include="Entities\IoCKernelImpl.cs" />
     <Compile Include="Entities\ProcesserEventArgs.cs" />
     <Compile Include="Entities\QueueModel.cs" />
     <Compile Include="Entities\QueueSignal.cs" />
+    <Compile Include="Entities\ResultType.cs" />
     <Compile Include="EventContext\ActionEventWorker.cs" />
     <Compile Include="EventContext\FunctionEventWorker.cs" />
-    <Compile Include="QueueInitialization.cs" />
-    <Compile Include="Interface\IPeristaltic.cs" />
+    <Compile Include="Events\GenericEventHandle.cs" />
+    <Compile Include="Interface\IPeristalticConfiguration.cs" />
+    <Compile Include="Interface\IGenericEventHandle.cs" />
+    <Compile Include="Interface\IPeristalticEventArg.cs" />
+    <Compile Include="Initialization.cs" />
+    <Compile Include="Interface\IBindContext.cs" />
     <Compile Include="Interface\IQueueModel.cs" />
+    <Compile Include="Interface\IResultEventArgs.cs" />
     <Compile Include="Peristaltic\QueueAttacher.cs" />
     <Compile Include="Peristaltic\QueueDispatcher.cs" />
     <Compile Include="Peristaltic\QueueExecuter.cs" />
@@ -63,14 +69,6 @@
     <ProjectReference Include="..\Core\GSP.Core.csproj">
       <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
       <Name>GSP.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseFactory.csproj">
-      <Project>{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}</Project>
-      <Name>GSP.DatabaseFactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Database\GSP.Database.csproj">
-      <Project>{b934ee7d-43bc-445b-b722-5d9a41481b43}</Project>
-      <Name>GSP.Database</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

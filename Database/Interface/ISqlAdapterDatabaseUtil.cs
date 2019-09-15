@@ -11,7 +11,7 @@ namespace Database.Interface
 {
     public interface ISqlAdapterDatabaseUtil
     {
-        IGenericResult Get(SqlCommand command);
-        IGenericResult Set(SqlCommand command, DataSet dataSet);
+        Tuple<bool, object> Get(SqlCommand command);
+        Tuple<bool, object> Set(SqlCommand command, DataSet dataSet);
     }
 }

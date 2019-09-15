@@ -1,7 +1,5 @@
-﻿using Core.Events;
-using Core.Helper;
-using Core.Interface;
-using Queue.Entities;
+﻿using Queue.Entities;
+using Queue.Interface;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -20,40 +18,33 @@ namespace Queue.EventContext
     /// </summary>
     internal class FunctionEventWorker<T, R>
     {
-        private IGenericEventHandle<IGenericEventArg<T>, R> Handler { get; }
-        private AsyncCallback Callback { get; }
-        private WaitHandle[] LoaderSignal { get; }
-        private ConcurrentQueue<QueueModel> Troops { get; }
+        private readonly IGenericEventHandle<T, R> _handler;
+        private readonly AsyncCallback _callback;
+        private readonly ConcurrentDictionary<Guid, object> _result;
+        private readonly ConcurrentDictionary<Guid, WaitHandle[]> _resultSignal;
 
-        public FunctionEventWorker(IGenericEventHandle<IGenericEventArg<T>, R> handler)
+        public FunctionEventWorker
+            (IGenericEventHandle<T, R> handler, ConcurrentDictionary<Guid, object> result, ConcurrentDictionary<Guid, WaitHandle[]> resultSignal)
         {
-            Handler = handler;
+            _handler = handler;
+            _result = result;
+            _resultSignal = resultSignal;
         }
-        public FunctionEventWorker(IGenericEventHandle<IGenericEventArg<T>, R> handler, AsyncCallback callback)
-            : this(handler)
+        public FunctionEventWorker
+            (IGenericEventHandle<T, R> handler, ConcurrentDictionary<Guid, object> result, ConcurrentDictionary<Guid, WaitHandle[]> resultSignal, AsyncCallback callback)
+            : this(handler, result, resultSignal)
         {
-            Callback = callback;
+            _callback = callback;
         }
-        public FunctionEventWorker(IGenericEventHandle<IGenericEventArg<T>, R> handler, WaitHandle[] loaderSignal, ConcurrentQueue<QueueModel> troops)
-            : this(handler)
+        
+        public void Action(ProcessorEventArgs<T> e)
         {
-            LoaderSignal = loaderSignal;
-            Troops = troops;
+            var result =  _handler.OnGenericEvent(e.Item);
+            _result.TryAdd(e.Id, result);
         }
-        public void Action(ProcessorEventArgs<IGenericEventArg<T>> e)
+        public void ActionAsync(ProcessorEventArgs<T> e)
         {
-            var result =  Handler.OnQueueEvent(e.Item);
-            e.Item.AttachData = result;
-            Troops.Enqueue(new QueueModel
-            {
-                Name = "Result",
-                Item = e.Item,
-            });
-            ((AutoResetEvent)LoaderSignal[0]).Set();
-        }
-        public void ActionAsync(ProcessorEventArgs<IGenericEventArg<T>> e)
-        {
-            Handler.OnQueueEventAsync(e.Item, Callback);
+            _handler.OnGenericEventAsync(e.Item, _callback);
         }
     }
 }

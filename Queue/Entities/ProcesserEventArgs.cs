@@ -12,9 +12,11 @@ namespace Queue.Entities
     /// <typeparam name="T"></typeparam>
     internal class ProcessorEventArgs<T> : EventArgs
     {
+        public Guid Id { get; }
         public T Item { get; }
-        public ProcessorEventArgs(T item)
+        public ProcessorEventArgs(Guid id, T item)
         {
+            Id = id;
             Item = item;
         }
     }

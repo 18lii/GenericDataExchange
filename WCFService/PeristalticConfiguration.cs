@@ -1,24 +1,29 @@
-﻿using Core.Infrastructure;
+﻿using Database.Helper;
+using Database.Interface;
 using Queue.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Data;
 
 namespace WCFService
 {
     public class PeristalticConfiguration : IPeristalticConfiguration
     {
         public IBindContext Context { get; set; }
-        public string ConnectionString { get; set; }
-        public PeristalticConfiguration(string[] codes)
+        public readonly ICommandContext _commandContext;
+        public readonly IAdapterContext _adapterContext;
+        public PeristalticConfiguration(ICommandContext commandContext, IAdapterContext adapterContext, string connectionString)
         {
-            ConnectionString = codes[0].Decryptogram(codes[1].Decryptogram());
+            commandContext.ConnectionString = connectionString;
+            adapterContext.ConnectionString = connectionString;
+            _commandContext = commandContext;
+            _adapterContext = adapterContext;
         }
         public IBindContext Configuration()
         {
-            Context.BindDatabase(1);
+            Context.Bind<Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>>("", _commandContext.Activing);
+            Context.Bind<Tuple<AptOperate, string[], DataSet[]>, Tuple<bool, object>>("", _adapterContext.Activing);
             return Context;
         }
     }

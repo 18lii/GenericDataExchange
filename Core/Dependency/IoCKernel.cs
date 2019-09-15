@@ -32,9 +32,9 @@ namespace Core.Dependency
             }
             return this;
         }
-        public V Resolve<V>() where V : class
+        public V Resolve<V>(object parameter) where V : class
         {
-            return IoCContext.Context.DITypeAnalyticalProvider.CreateDITypeAnalaytical().GetValue<V>();
+            return IoCContext.Context.DITypeAnalyticalProvider.CreateDITypeAnalaytical().GetValue<V>(parameter);
         }
     }
 }

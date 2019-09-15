@@ -68,9 +68,9 @@
       <Project>{BAA1BC30-4A51-40A0-B074-7B5C5A556F9D}</Project>
       <Name>GSP.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseFactory.csproj">
+    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseUtil.csproj">
       <Project>{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}</Project>
-      <Name>GSP.DatabaseFactory</Name>
+      <Name>GSP.DatabaseUtil</Name>
     </ProjectReference>
     <ProjectReference Include="..\Database\GSP.Database.csproj">
       <Project>{B934EE7D-43BC-445B-B722-5D9A41481B43}</Project>

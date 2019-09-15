@@ -5,12 +5,12 @@ using System.Collections.Generic;
 namespace Core.Dependency
 {
     /// <summary>
-    /// 反射实例化
+    /// 结构解析类
     /// </summary>
     public class DITypeAnalytical : IDITypeAnalytical
     {
         
-        public T GetValue<T>()
+        public T GetValue<T>(object parameter)
         {
             object analytical(Type type)
             {
@@ -30,12 +30,23 @@ namespace Core.Dependency
                                 args.Add(analytical(IoCContext.Context.DIManager.GetTypeInfo(para.ParameterType)));
                             }
                         }
+                        if(parameter != null)
+                        {
+                            args.Add(parameter);
+                        }
                         instance = Activator.CreateInstance(type, args.ToArray());
                         break;
                     }
                     else
                     {
-                        return Activator.CreateInstance(type);
+                        if(parameter != null)
+                        {
+                            return Activator.CreateInstance(type, parameter);
+                        }
+                        else
+                        {
+                            return Activator.CreateInstance(type);
+                        }
                     }
                 }
                 return instance;

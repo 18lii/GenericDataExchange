@@ -1,9 +1,6 @@
-﻿using Core.Events;
-using Core.Interface;
-using Database.Interface;
-using DatabaseFactory.Interface;
-using Queue.Entities;
+﻿using Queue.Entities;
 using Queue.EventContext;
+using Queue.Events;
 using Queue.Interface;
 using Queue.Peristaltic;
 using System;
@@ -17,15 +14,15 @@ namespace Queue
      * 2019-9-5  
      * 线程绑定器
      * 使用<see cref="IBindContext"/>公共接口，于外部配置线程所必须的类型绑定及事件处理方法绑定
-     * 于外部初始化方法中一次性调用<see cref="QueueInitialization.PeristalticStart(IPeristalticConfiguration)"/>
+     * 于外部初始化方法中一次性调用<see cref="Initialization.PeristalticStart(IPeristalticConfiguration)"/>
      * 以启动线程
      * 
      **/
 
     /// <summary>
-    /// 线程初始化类，
+    /// 线程初始化类，具体说明参照接口注释
     /// </summary>
-    internal class PeristalticContext : IBindContext
+    internal class BindContext : IBindContext
     {
         public WaitHandle[] LoaderSignal { get; }
         public ConcurrentDictionary<Guid, WaitHandle[]> ResultSignal { get; }
@@ -33,12 +30,8 @@ namespace Queue
         public ConcurrentDictionary<string, int> ExecuterDefault { get; set; }
         public ConcurrentDictionary<string, Action<WaitHandle[], ConcurrentQueue<QueueModel>>> Actions { get; }
         public ConcurrentDictionary<string, bool> Register { get; }
-        public ConcurrentDictionary<Guid, IGenericResult> Result { get; }
-        private IGenericEventHandle<IGenericEventArg<IFactoryContext>> _actionHandle;
-        private IGenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult> _funcHandle;
-        public IWorkContext DbContext { get; set; }
-        public PeristalticContext
-            (IGenericEventHandle<IGenericEventArg<IFactoryContext>> actionHandle, IGenericEventHandle<IGenericEventArg<IFactoryContext>, IGenericResult> funcHandle)
+        public ConcurrentDictionary<Guid, object> Result { get; }
+        public BindContext()
         {
             LoaderSignal = new WaitHandle[2] { new AutoResetEvent(false), new ManualResetEvent(false)};
             Troops = new ConcurrentQueue<QueueModel>();
@@ -46,79 +39,82 @@ namespace Queue
             ExecuterDefault = new ConcurrentDictionary<string, int>();
             Actions = new ConcurrentDictionary<string, Action<WaitHandle[], ConcurrentQueue<QueueModel>>>();
             Register = new ConcurrentDictionary<string, bool>();
-            Result = new ConcurrentDictionary<Guid, IGenericResult>();
-            _actionHandle = actionHandle;
-            _funcHandle = funcHandle;
-            Action<WaitHandle[], ConcurrentQueue<QueueModel>> result = ((signal, queue) =>//结果线程委托
-            {
-                new QueueExecuter<IGenericEventArg<IFactoryContext>>
-                (
-                    signal,
-                    queue,
-                    new ActionEventWorker<IGenericEventArg<IFactoryContext>>
-                    (
-                        actionHandle.Register
-                        (
-                            r =>
-                            {
-                                Result.TryAdd(r.Id, (IGenericResult)r.AttachData);
-                                ResultSignal.TryAdd(r.Id, new WaitHandle[2] 
-                                {
-                                    new AutoResetEvent(false),
-                                    new ManualResetEvent(false)
-                                });
-                                ((ManualResetEvent)ResultSignal[r.Id][1]).Set();
-                            }
-                        )
-                    ).Action
-                ).Execute();
-            });
-            Actions.TryAdd("Result", result);
-            ExecuterDefault.TryAdd("Result", 1);
+            Result = new ConcurrentDictionary<Guid, object>();
         }
-        public void BindDatabase(int d = 1)
+        public void Bind<T>(string name, Action<T> method, int d = 1)
         {
             Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
             {
-                new QueueExecuter<IGenericEventArg<IFactoryContext>>
+                new QueueExecuter<T>
                 (
                     signal,
                     queue,
-                    new FunctionEventWorker<IFactoryContext, IGenericResult>
+                    new ActionEventWorker<T>
                     (
-                        _funcHandle.Register
-                        (
-                            DbContext.Activing
-                        ),
-                        LoaderSignal, 
-                        Troops
+                        new GenericEventHandle<T>().Register(method)
                     ).Action
                 ).Execute();
             };
-            Actions.TryAdd("DatabaseService", action);
-            ExecuterDefault.TryAdd("DatabaseService", d);
+            Actions.TryAdd(name, action);
+            ExecuterDefault.TryAdd(name, d);
         }
-        //数据库异步线程
-        public void BindDatabaseAsync(AsyncCallback a, int d = 1)
+        public void BindAsync<T>(string name, Action<T> method, AsyncCallback callback, int d= 1)
         {
-            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>//处理线程委托
+            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
             {
-                new QueueExecuter<IGenericEventArg<IFactoryContext>>
+                new QueueExecuter<T>
                 (
-                    signal, //信号
-                    queue, //队列
-                    new FunctionEventWorker<IFactoryContext, IGenericResult>//内部处理事件
+                    signal,
+                    queue,
+                    new ActionEventWorker<T>
                     (
-                        _funcHandle.Register//核心事件
-                        (
-                            DbContext.Activing//数据库工厂处理方法
-                        ),
-                        a//数据库操作回调函数
-                    ).ActionAsync//处理线程委托方法
-                ).Execute();//处理线程核心方法
+                        new GenericEventHandle<T>().Register(method),
+                        callback
+                    ).Action
+                ).Execute();
             };
-            Actions.TryAdd("DatabaseServiceAsync", action);
-            ExecuterDefault.TryAdd("DatabaseServiceAsync", d);
+            Actions.TryAdd(name, action);
+            ExecuterDefault.TryAdd(name, d);
+        }
+        public void Bind<T, R>(string name, Func<T, R> method, int d = 1)
+        {
+            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
+            {
+                new QueueExecuter<T>
+                (
+                    signal,
+                    queue,
+                    new FunctionEventWorker<T, R>
+                    (
+                        new GenericEventHandle<T, R>().Register(method),
+                        Result,
+                        ResultSignal
+                    ).Action
+                ).Execute();
+            };
+            Actions.TryAdd(name, action);
+            ExecuterDefault.TryAdd(name, d);
+        }
+        //绑定异步线程
+        public void BindAsync<T, R>(string name, Func<T, R> method, AsyncCallback callback, int d = 1)
+        {
+            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
+            {
+                new QueueExecuter<T>
+                (
+                    signal,
+                    queue,
+                    new FunctionEventWorker<T, R>
+                    (
+                        new GenericEventHandle<T, R>().Register(method),
+                        Result,
+                        ResultSignal,
+                        callback
+                    ).Action
+                ).Execute();
+            };
+            Actions.TryAdd(name, action);
+            ExecuterDefault.TryAdd(name, d);
         }
     }
 }

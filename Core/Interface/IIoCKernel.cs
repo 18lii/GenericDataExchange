@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Core.Interface
 {
     /// <summary>
@@ -13,6 +8,6 @@ namespace Core.Interface
     {
         IIoCKernel Bind<T>();
         IIoCKernel To<U>() where U : class;
-        V Resolve<V>() where V : class;
+        V Resolve<V>(object parameter = null) where V : class;
     }
 }

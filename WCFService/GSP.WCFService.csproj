@@ -15,6 +15,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
     <XsdCodeGenEnabled>True</XsdCodeGenEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -44,9 +47,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entity\DbFactory.cs" />
+    <Compile Include="Entity\DbUnitOfWork.cs" />
     <Compile Include="Entity\IoCKernelImpl.cs" />
     <Compile Include="Entity\ReceiveData.cs" />
+    <Compile Include="Infrastructure\DESCryptExtensions.cs" />
+    <Compile Include="Infrastructure\CompressionExtensions.cs" />
     <Compile Include="WCFServiceInitialization.cs" />
     <Compile Include="PeristalticConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -58,9 +63,9 @@
       <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
       <Name>GSP.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseFactory.csproj">
+    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseUtil.csproj">
       <Project>{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}</Project>
-      <Name>GSP.DatabaseFactory</Name>
+      <Name>GSP.DatabaseUtil</Name>
     </ProjectReference>
     <ProjectReference Include="..\Database\GSP.Database.csproj">
       <Project>{b934ee7d-43bc-445b-b722-5d9a41481b43}</Project>

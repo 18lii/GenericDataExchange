@@ -1,12 +1,6 @@
-﻿using Core.Events;
-using Core.Interface;
-using Queue.Entities;
+﻿using Queue.Entities;
+using Queue.Interface;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Queue.EventContext
 {
@@ -40,7 +34,7 @@ namespace Queue.EventContext
         /// <param name="e"></param>
         public void Action(ProcessorEventArgs<T> e)
         {
-            Handler.OnQueueEvent(e.Item);
+            Handler.OnGenericEventEvent(e.Item);
         }
         /// <summary>
         /// 触发Action并进行异步回调
@@ -49,7 +43,7 @@ namespace Queue.EventContext
         /// <param name="e"></param>
         public void ActionAsync(ProcessorEventArgs<T> e)
         {
-            Handler.OnQueueEventAsync(e.Item, Callback);
+            Handler.OnGenericEventAsync(e.Item, Callback);
         }
     }
 }

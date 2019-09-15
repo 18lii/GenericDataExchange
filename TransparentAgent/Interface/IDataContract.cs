@@ -8,9 +8,9 @@ namespace TransparentAgent.Interface
     /// </summary>
     public interface IContractData
     {
-        string UserId { get; set; }
         string[] SqlText { get; set; }
         Hashtable[] Param { get; set; }
         DataSet[] DataSet { get; set; }
+        bool sequence { get; set; }
     }
 }

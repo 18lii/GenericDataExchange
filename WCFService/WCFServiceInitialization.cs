@@ -1,8 +1,6 @@
-﻿using Core;
+﻿using Core.Infrastructure;
 using Core.Interface;
-using Database;
-using DatabaseFactory.Interface;
-using Queue;
+using Queue.Interface;
 using WCFService.Entity;
 
 namespace WCFService
@@ -12,23 +10,21 @@ namespace WCFService
     /// </summary>
     public static class WCFServiceInitialization
     {
-        
+        private static readonly IIoCKernel _kernel = new IoCKernelImpl();
+        /// <summary>
+        /// 服务组件装配方法，参数<see cref="string[]"/>
+        /// </summary>
+        /// <param name="codes"></param>
         public static void Initialization(string[] codes)
         {
-            var kernel = new IoCKernelImpl();
-            kernel.Bind<IIoCKernel>().To<IoCKernelImpl>();
-            var core = kernel.Resolve<CoreInitialization>();
-            //初始化核心入列事件依赖
-            //初始化核心无返回值消息处理事件依赖
-            core.Initialization<IGenericEventArg<IFactoryContext>>();
-            //初始化核心有返回值消息处理事件依赖
-            core.Initialization<IGenericEventArg<IFactoryContext>, IGenericResult>();
-            //初始化数据库依赖
-            kernel.Resolve<DatabaseInitialization>().Initialization();
-            //初始化队列器依赖，服务启动
-            kernel.Resolve<Dipper>().DipBind();
+            //绑定核心IoC容器依赖
+            _kernel.Bind<IIoCKernel>().To<IoCKernelImpl>();
+            //绑定队列器配置程序依赖
+            _kernel.Bind<IPeristalticConfiguration>().To<PeristalticConfiguration>();
+            //绑定数据库连接层依赖
+            _kernel.Resolve<Database.Initialization>().BindToCore();
             //启动队列器，启动数据库配件
-            kernel.Resolve<QueueInitialization>().PeristalticStart(new PeristalticConfiguration(codes));
+            _kernel.Resolve<Queue.Initialization>(codes[0].Decryptogram(codes[1].Decryptogram())).PeristalticStart();
         }
     }
 }

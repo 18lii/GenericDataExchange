@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreInitialization.cs" />
     <Compile Include="Dependency\DefualtDITypeAnalyticalProivder.cs" />
     <Compile Include="Dependency\DIManager.cs" />
     <Compile Include="Dependency\DITypeAnalytical.cs" />
@@ -52,11 +51,8 @@
     <Compile Include="Entities\Enums.cs" />
     <Compile Include="Entities\GenericResult.cs" />
     <Compile Include="Entities\IoCKernelImpl.cs" />
-    <Compile Include="Events\GenericEventHandlers.cs" />
     <Compile Include="Helper\ExceptionMessage.cs" />
     <Compile Include="Helper\Extensions.cs" />
-    <Compile Include="Ignition\Entry.cs" />
-    <Compile Include="Ignition\Timespan.cs" />
     <Compile Include="Infrastructure\CompressionExtensions.cs" />
     <Compile Include="Infrastructure\DESCryptExtensions.cs" />
     <Compile Include="Infrastructure\XmlUtil.cs" />

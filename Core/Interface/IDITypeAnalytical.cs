@@ -11,6 +11,6 @@ namespace Core.Interface
     /// </summary>
     public interface IDITypeAnalytical
     {
-        T GetValue<T>();
+        T GetValue<T>(object parameter = null);
     }
 }

@@ -3,7 +3,7 @@ using Core.Entities;
 using Core.Infrastructure;
 using Core.Interface;
 using Database;
-using DatabaseFactory.Interface;
+using DatabaseUtil.Interface;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Queue;
 using System;
@@ -41,10 +41,10 @@ namespace UnitTestProject.Tests
                 //初始化核心有返回值消息处理事件依赖
                 core.Initialization<IGenericEventArg<IFactoryContext>, IGenericResult>();
                 //初始化数据库依赖
-                kernel.Resolve<DatabaseInitialization>().Initialization();
+                kernel.Resolve<Database.Initialization>().BindToCore();
                 //初始化队列器依赖，服务启动
                 kernel.Resolve<Dipper>().DipBind();
-                kernel.Resolve<QueueInitialization>().PeristalticStart(new PeristalticConfiguration(connStr));
+                kernel.Resolve<Queue.Initialization>().PeristalticStart(new PeristalticConfiguration(connStr));
                 //获取数据工厂
                 var factory = kernel.Resolve<DbFactoryImpl>();
                 Assert.IsTrue(true);

@@ -9,9 +9,9 @@ namespace WCFService.Entity
     [Serializable]
     public class ReceiveData : IContractData
     {
-        public string UserId { get; set; }
         public string[] SqlText { get; set; }
         public Hashtable[] Param { get; set; }
         public DataSet[] DataSet { get; set; }
+        public bool sequence { get; set; }
     }
 }

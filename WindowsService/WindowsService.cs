@@ -2,6 +2,7 @@
 using System.ServiceProcess;
 using WCFService.Service;
 using WCFService;
+using System.Configuration;
 
 namespace WindowsService
 {
@@ -15,11 +16,9 @@ namespace WindowsService
 
         protected override void OnStart(string[] args)
         {
-            var strs = new string[2]
-            {
-                "FF50E1525C650A586E0981980ED69935B92F4B36B964C87FB98189A605C704592ADF5312CB1EDED37336740A27F466D3C21E156E84275675F9CFBCF586AE0337A8C99EF1A72EA37228BB9F80D6D4F95A",
-                "30E9AA65BA938F545A6CC1DB3027CED9"
-            };
+            var strs = new string[2];
+            strs[0] = ConfigurationManager.AppSettings["DESString"];
+            strs[1] = ConfigurationManager.AppSettings["DESKey"];
             WCFServiceInitialization.Initialization(strs);
             Host.Open();
         }

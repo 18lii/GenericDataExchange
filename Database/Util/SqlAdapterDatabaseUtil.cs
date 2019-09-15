@@ -1,7 +1,4 @@
-﻿using Core.Entities;
-using Core.Helper;
-using Core.Interface;
-using Database.Entities;
+﻿using Database.Helper;
 using Database.Interface;
 using System;
 using System.Data;
@@ -11,7 +8,7 @@ namespace Database.Util
 {
     internal class SqlAdapterDatabaseUtil : ISqlAdapterDatabaseUtil
     {
-        public IGenericResult Get(SqlCommand command)
+        public Tuple<bool, object> Get(SqlCommand command)
         {
             try
             {
@@ -19,27 +16,27 @@ namespace Database.Util
                 {
                     var tb = new DataTable();
                     adapter.Fill(tb);
-                    return new GenericResultImpl(ResultType.Success, tb);
+                    return new Tuple<bool, object>(true, tb);
                 }
             }
             catch(Exception e)
             {
-                return new GenericResultImpl(ResultType.Error, new ExceptionMessage(e).ExMessage);
+                return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
             }
             
         }
-        public IGenericResult Set(SqlCommand command, DataSet dataSet)
+        public Tuple<bool, object> Set(SqlCommand command, DataSet dataSet)
         {
             try
             {
                 using(var adapter = new SqlDataAdapter(command))
                 {
-                    return new GenericResultImpl(ResultType.Success, adapter.Update(dataSet));
+                    return new Tuple<bool, object>(true, adapter.Update(dataSet));
                 }
             }
             catch (Exception e)
             {
-                return new GenericResultImpl(ResultType.Error, new ExceptionMessage(e).ExMessage);
+                return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
             }
         }
     }

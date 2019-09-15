@@ -1,12 +1,7 @@
-﻿using Core.Entities;
-using Core.Helper;
-using Core.Interface;
-using Dapper;
-using Database.Entities;
+﻿using Dapper;
+using Database.Helper;
 using Database.Interface;
-using Database.Util;
 using System;
-using System.Collections.Concurrent;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -14,121 +9,110 @@ namespace Database.Infrastructure
 {
     internal abstract class BaseContext : IBaseContext
     {
-        protected BaseContext(ISqlServerDatabaseUtil dbUtil, ISqlAdapterDatabaseUtil apUtil)
+        private readonly ISqlCommandDatabaseUtil _comUtil;
+        private readonly ISqlAdapterDatabaseUtil _aptUtil;
+        protected BaseContext(ISqlCommandDatabaseUtil cmdUtil)
         {
-            _dbUtil = dbUtil;
-            _apUtil = apUtil;
-            SqlConnection = new ConcurrentDictionary<string, SqlConnection>();
-            SqlTransaction = new ConcurrentDictionary<Guid, SqlTransaction>();
+            _comUtil = cmdUtil;
+            
+        }
+        protected BaseContext(ISqlAdapterDatabaseUtil aptUtil)
+        {
+            _aptUtil = aptUtil;
         }
         public string ConnectionString { get; set; }
-        protected SqlConnection SetConnection(string userId)
+        protected SqlConnection SetConnection()
         {
-            SqlConnection.TryAdd(userId, new SqlConnection(ConnectionString));
-            if (SqlConnection[userId].State == ConnectionState.Closed)
+            Connection = new SqlConnection(ConnectionString);
+            if (Connection.State == ConnectionState.Closed)
             {
-                SqlConnection[userId].Open();
+                Connection.Open();
+                Transaction = Connection.BeginTransaction();
             }
-            return SqlConnection[userId];
+            return Connection;
         }
-        public ConcurrentDictionary<string, SqlConnection> SqlConnection { get; set; }
-        public ConcurrentDictionary<Guid, SqlTransaction> SqlTransaction { get; set; }
-        private readonly ISqlServerDatabaseUtil _dbUtil;
-        private readonly ISqlAdapterDatabaseUtil _apUtil;
+        public SqlConnection Connection { get; set; }
+        public SqlTransaction Transaction { get; set; }
+        
         /// <summary>
         /// 数据库提交方法
         /// </summary>
         /// <param name="command"></param>
         /// <param name="dbOperate"></param>
         /// <returns></returns>
-        public IGenericResult Accept(SqlConnection connection, DbOperate operate, string sqlText, DynamicParameters param, SqlTransaction transaction)
+        public Tuple<bool, object> Accept(SqlConnection connection, CmdOperate operate, string sqlText, DynamicParameters param, SqlTransaction transaction)
         {
             switch (operate)
             {
-                case DbOperate.Select:
-                    return _dbUtil.ExecuteReader(connection, sqlText, param, transaction);
-                case DbOperate.Insert:
-                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction); ;
-                case DbOperate.Update:
-                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
-                case DbOperate.Delete:
-                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
-                case DbOperate.ExecuteScalar:
-                    return _dbUtil.ExecuteScalar(connection, sqlText, param, transaction);
-                case DbOperate.ExecuteReader:
-                    return _dbUtil.ExecuteReader(connection, sqlText, param, transaction);
-                case DbOperate.ExecuteNoQuery:
-                    return _dbUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
-                case DbOperate.ExecuteProcedure:
-                    return _dbUtil.ExecuteProcedure(connection, sqlText, param, transaction);
+                case CmdOperate.Select:
+                    return _comUtil.ExecuteReader(connection, sqlText, param, transaction);
+                case CmdOperate.Insert:
+                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction); ;
+                case CmdOperate.Update:
+                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                case CmdOperate.Delete:
+                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                case CmdOperate.ExecuteScalar:
+                    return _comUtil.ExecuteScalar(connection, sqlText, param, transaction);
+                case CmdOperate.ExecuteReader:
+                    return _comUtil.ExecuteReader(connection, sqlText, param, transaction);
+                case CmdOperate.ExecuteNoQuery:
+                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                case CmdOperate.ExecuteProcedure:
+                    return _comUtil.ExecuteProcedure(connection, sqlText, param, transaction);
                 default:
-                    return new GenericResultImpl(ResultType.IllegalOperation, ResultType.IllegalOperation.ToDescription(), "错误的数据库操作类型。");
+                    return new Tuple<bool, object>(false, "错误的数据库操作类型。");
             }
         }
-        public IGenericResult Accept(AdapterOperate operate, SqlCommand command, DataSet dataSet = null)
+        public Tuple<bool, object> Accept(AptOperate operate, SqlCommand command, DataSet dataSet = null)
         {
             switch (operate)
             {
-                case AdapterOperate.Get:
-                    return _apUtil.Get(command);
-                case AdapterOperate.Set:
-                    return _apUtil.Set(command, dataSet);
+                case AptOperate.Get:
+                    return _aptUtil.Get(command);
+                case AptOperate.Set:
+                    return _aptUtil.Set(command, dataSet);
                 default:
-                    return new GenericResultImpl(ResultType.IllegalOperation, ResultType.IllegalOperation.ToDescription(), "错误的数据库操作类型。");
+                    return new Tuple<bool, object>(false, "错误的数据库操作类型");
             }
         }
         /// <summary>
         /// 数据库事务提交
         /// </summary>
         /// <returns></returns>
-        public IGenericResult DbCommit(string userId, Guid id)
+        public Tuple<bool, object> DbCommit()
         {
-            var t = SqlTransaction.TryRemove(id, out var value);
             try
             {
-                if (t)
-                {
-                    value.Commit();
-                    return new GenericResultImpl(ResultType.Success, "Commited");
-                }
-                else
-                {
-                    return new GenericResultImpl(ResultType.IllegalOperation, "提交了不存在的数据库事务！！！");
-                }
+                    Transaction.Commit();
+                    return new Tuple<bool, object>(true, "Commited");
             }
-            catch (Exception exp)
+            catch (Exception e)
             {
-                value.Rollback();
-                var em = new ExceptionMessage(exp, "Rollback");
-                return new GenericResultImpl(ResultType.NoChanged, em.ExMessage, em.UserMessage);
+                Transaction.Rollback();
+                return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
             }
             finally
             {
-                SqlConnection[userId].Close();
+                Connection.Close();
+                Connection.Dispose();
             }
         }
-        public IGenericResult DbRollback(string userId, Guid id)
+        public Tuple<bool, object> DbRollback()
         {
             try
             {
-                if (SqlTransaction.TryRemove(id, out var value))
-                {
-                    value.Rollback();
-                    return new GenericResultImpl(ResultType.Success, "Commited");
-                }
-                else
-                {
-                    return new GenericResultImpl(ResultType.IllegalOperation, "回滚了不存在的数据库事务！！！");
-                }
+                Transaction.Rollback();
+                    return new Tuple<bool, object>(true, "Commited");
             }
-            catch (Exception exp)
+            catch (Exception e)
             {
-                var em = new ExceptionMessage(exp, "Rollback");
-                return new GenericResultImpl(ResultType.NoChanged, em.ExMessage, em.UserMessage);
+                return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
             }
             finally
             {
-                SqlConnection[userId].Close();
+                Connection.Close();
+                Connection.Dispose();
             }
         }
     }

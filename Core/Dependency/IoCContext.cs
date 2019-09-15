@@ -10,7 +10,7 @@ namespace Core.Dependency
     /// <summary>
     /// IoC上下文类
     /// </summary>
-    public class IoCContext
+    internal class IoCContext
     {
         private IoCContext() { }
 
