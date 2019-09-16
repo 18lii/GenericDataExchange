@@ -21,14 +21,14 @@ namespace Queue.EventContext
         private readonly IGenericEventHandle<T, R> _handler;
         private readonly AsyncCallback _callback;
         private readonly ConcurrentDictionary<Guid, object> _result;
-        private readonly ConcurrentDictionary<Guid, WaitHandle[]> _resultSignal;
+        private readonly ConcurrentDictionary<Guid, WaitHandle[]> _signal;
 
         public FunctionEventWorker
             (IGenericEventHandle<T, R> handler, ConcurrentDictionary<Guid, object> result, ConcurrentDictionary<Guid, WaitHandle[]> resultSignal)
         {
             _handler = handler;
             _result = result;
-            _resultSignal = resultSignal;
+            _signal = resultSignal;
         }
         public FunctionEventWorker
             (IGenericEventHandle<T, R> handler, ConcurrentDictionary<Guid, object> result, ConcurrentDictionary<Guid, WaitHandle[]> resultSignal, AsyncCallback callback)
@@ -41,6 +41,7 @@ namespace Queue.EventContext
         {
             var result =  _handler.OnGenericEvent(e.Item);
             _result.TryAdd(e.Id, result);
+            ((AutoResetEvent)_signal[e.Id][0]).Set();
         }
         public void ActionAsync(ProcessorEventArgs<T> e)
         {

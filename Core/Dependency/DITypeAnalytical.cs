@@ -18,7 +18,8 @@ namespace Core.Dependency
                 object instance = null;
                 foreach (var conInfo in constructorInfos)
                 {
-                    if (conInfo.GetParameters().Length > 0)
+                    var parameters = conInfo.GetParameters();
+                    if (parameters.Length > 0)
                     {
                         var paras = conInfo.GetParameters();
                         var args = new List<object>();
@@ -30,7 +31,7 @@ namespace Core.Dependency
                                 args.Add(analytical(IoCContext.Context.DIManager.GetTypeInfo(para.ParameterType)));
                             }
                         }
-                        if(parameter != null)
+                        if(args.Count < parameters.Length)
                         {
                             args.Add(parameter);
                         }
@@ -39,14 +40,7 @@ namespace Core.Dependency
                     }
                     else
                     {
-                        if(parameter != null)
-                        {
-                            return Activator.CreateInstance(type, parameter);
-                        }
-                        else
-                        {
-                            return Activator.CreateInstance(type);
-                        }
+                        return Activator.CreateInstance(type);
                     }
                 }
                 return instance;

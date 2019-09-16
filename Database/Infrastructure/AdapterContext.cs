@@ -17,7 +17,7 @@ namespace Database.Infrastructure
             var result = default(Tuple<bool, object>);
             for (var i = 0; i < sqlTexts.Length; i++)
             {
-                var command = new SqlCommand(sqlTexts[i], Connection, Transaction);
+                var command = new SqlCommand(sqlTexts[i], SetConnection(), Transaction);
                 command.CommandTimeout = 60;
                 switch (operate)
                 {

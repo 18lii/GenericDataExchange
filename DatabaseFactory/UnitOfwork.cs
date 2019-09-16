@@ -3,18 +3,20 @@ using Queue.Events;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Configuration;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace DatabaseUtil
+namespace DatabaseUnitOfWork
 {
-    public abstract class UnitOfwork : IUnitOfWork
+    public class UnitOfwork : IUnitOfWork
     {
         /// <summary>
         /// 数据库插入/修改事件，成功则触发
         /// </summary>
         //public event Action<IGenericResult> DatabaseModifyEvent;
-        private readonly string _peristalticName = "DatabaseService";
+        private readonly string _sqlClientName = ConfigurationManager.AppSettings["QueueExecute1"];
+        private readonly string _adoClientName = ConfigurationManager.AppSettings["QueueExecute2"];
         //private void OnDatabaseModify(IGenericResult result)
         //{
         //    DatabaseModifyEvent?.Invoke(result);
@@ -24,9 +26,10 @@ namespace DatabaseUtil
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<object> Result(Guid id)
+        public async Task<object> Result(Guid id)
         {
-            return GenericEventHandle.OnResultEvent(id);
+            var result = await GenericEventHandle.OnResultEvent(id);
+            return result;
         }
         /// <summary>
         /// 数据库记录获取
@@ -37,7 +40,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Select, sqlText.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
         /// <summary>
@@ -51,7 +54,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Insert, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
 
@@ -67,7 +70,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Update, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
 
@@ -82,7 +85,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Delete, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
         /// <summary>
@@ -97,7 +100,7 @@ namespace DatabaseUtil
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteScalar, sqlText.ToContextParam(param));
 
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
         /// <summary>
@@ -111,7 +114,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteReader, sqlText.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
         /// <summary>
@@ -125,7 +128,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteNoQuery, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
         ///// <summary>
@@ -138,7 +141,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteProcedure, procedureName.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
             return id;
         }
         /// <summary>
@@ -152,7 +155,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<AptOperate, string[], DataSet[]>(AptOperate.Set, new string[1] { sqlText }, null);
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_adoClientName, id, context, sequence);
             return id;
         }
         /// <summary>
@@ -165,7 +168,7 @@ namespace DatabaseUtil
         {
             var id = Guid.NewGuid();
             var context = new Tuple<AptOperate, string[], DataSet[]>(AptOperate.Set, sqlText, dataSet);
-            GenericEventHandle.OnGenericEvent("", id, context, sequence);
+            GenericEventHandle.OnGenericEvent(_adoClientName, id, context, sequence);
             return id;
         }
     }

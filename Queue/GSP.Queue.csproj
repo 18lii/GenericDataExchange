@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="BindContext.cs" />
     <Compile Include="Entities\Executer.cs" />
-    <Compile Include="Entities\GenericEventArgs.cs" />
     <Compile Include="Entities\IoCKernelImpl.cs" />
     <Compile Include="Entities\ProcesserEventArgs.cs" />
     <Compile Include="Entities\QueueModel.cs" />

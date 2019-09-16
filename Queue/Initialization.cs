@@ -10,9 +10,9 @@ namespace Queue
     {
         private readonly BindContext _bindContext;
         private readonly IPeristalticConfiguration _configuration;
-        public Initialization(IBindContext bindContext, IPeristalticConfiguration configuration)
+        public Initialization(IPeristalticConfiguration configuration)
         {
-            _bindContext = (BindContext)bindContext;
+            _bindContext = new BindContext();
             _configuration = configuration;
         }
         /// <summary>
@@ -32,19 +32,18 @@ namespace Queue
             GenericEventHandle.Register(guid =>
             {
                 object result = null;
-                Parallel.ForEach(context.ResultSignal, signal =>
+
+                if(context.ResultSignal.TryGetValue(guid, out var signal))
                 {
-                    if (signal.Key == guid)
+                    if (WaitHandle.WaitAny(signal) == 0)
                     {
-                        if (WaitHandle.WaitAny(signal.Value) == 1)
+                        context.ResultSignal.TryRemove(guid, out var temp);
+                        if (context.Result.TryRemove(guid, out var v))
                         {
-                            if (context.Result.TryRemove(guid, out var v))
-                            {
-                                result = v;
-                            }
+                            result = v;
                         }
                     }
-                });
+                }
                 return result;
             });
             //启动队列线程

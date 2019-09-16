@@ -1,5 +1,6 @@
 ﻿using Core.Infrastructure;
 using Core.Interface;
+using DatabaseUnitOfWork;
 using Queue.Interface;
 using WCFService.Entity;
 
@@ -19,6 +20,9 @@ namespace WCFService
         {
             //绑定核心IoC容器依赖
             _kernel.Bind<IIoCKernel>().To<IoCKernelImpl>();
+            
+            //绑定数据库工作单元依赖
+            _kernel.Bind<IUnitOfWork>().To<UnitOfwork>();
             //绑定队列器配置程序依赖
             _kernel.Bind<IPeristalticConfiguration>().To<PeristalticConfiguration>();
             //绑定数据库连接层依赖

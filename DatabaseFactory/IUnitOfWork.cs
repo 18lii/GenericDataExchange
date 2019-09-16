@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace DatabaseUtil
+namespace DatabaseUnitOfWork
 {
     public interface IUnitOfWork
     {

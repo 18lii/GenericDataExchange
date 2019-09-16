@@ -17,9 +17,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSP.TransparentAgent", "TransparentAgent\GSP.TransparentAgent.csproj", "{D2874C00-A880-4029-B0FF-DE1D7CC30632}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSP.DatabaseUtil", "DatabaseFactory\GSP.DatabaseUtil.csproj", "{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSP.DatabaseUnitOfWork", "DatabaseFactory\GSP.DatabaseUnitOfWork.csproj", "{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup", "Setup\Setup.csproj", "{4798C840-7DE4-4315-B478-E9FB0A7433DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSP.WindowsServiceSetup", "Setup\GSP.WindowsServiceSetup.csproj", "{4798C840-7DE4-4315-B478-E9FB0A7433DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

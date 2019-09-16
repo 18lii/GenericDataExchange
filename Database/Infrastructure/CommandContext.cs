@@ -33,11 +33,11 @@ namespace Database.Infrastructure
                         {
                             dyParam.Add(item.Key.ToString(), item.Value);
                         }
-                        result = Accept(Connection, operate, kv.Key, dyParam, Transaction);
+                        result = Accept(SetConnection(), operate, kv.Key, dyParam, Transaction);
                     }
                     else
                     {
-                        result = Accept(Connection, operate, kv.Key, dyParam, Transaction);
+                        result = Accept(SetConnection(), operate, kv.Key, dyParam, Transaction);
                     }
                 });
             }

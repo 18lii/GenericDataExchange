@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DatabaseUtil
+namespace DatabaseUnitOfWork
 {
     /// <summary>
     /// 数据库操作类型枚举

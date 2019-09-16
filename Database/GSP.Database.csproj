@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\ConnectionTest.cs" />
     <Compile Include="Helper\DbOperate.cs" />
     <Compile Include="Helper\ExceptionMessage.cs" />
     <Compile Include="Helper\SqlExceptionMessage.cs" />

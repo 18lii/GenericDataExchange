@@ -98,6 +98,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Setup\GSP.WindowsServiceSetup.csproj">
+      <Project>{4798c840-7de4-4315-b478-e9fb0a7433da}</Project>
+      <Name>GSP.WindowsServiceSetup</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WCFService\GSP.WCFService.csproj">
       <Project>{273439b1-53ff-48a7-89aa-42632039bb5b}</Project>
       <Name>GSP.WCFService</Name>

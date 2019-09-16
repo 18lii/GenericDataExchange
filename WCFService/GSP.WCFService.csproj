@@ -39,6 +39,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
@@ -63,9 +64,9 @@
       <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
       <Name>GSP.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseUtil.csproj">
-      <Project>{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}</Project>
-      <Name>GSP.DatabaseUtil</Name>
+    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseUnitOfWork.csproj">
+      <Project>{6ac108a2-0fb0-4f33-9012-fdae304c1bf2}</Project>
+      <Name>GSP.DatabaseUnitOfWork</Name>
     </ProjectReference>
     <ProjectReference Include="..\Database\GSP.Database.csproj">
       <Project>{b934ee7d-43bc-445b-b722-5d9a41481b43}</Project>

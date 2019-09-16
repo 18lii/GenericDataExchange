@@ -1,5 +1,5 @@
 ﻿using Database.Helper;
-using DatabaseUtil;
+using DatabaseUnitOfWork;
 
 namespace WCFService.Entity
 {
