@@ -10,7 +10,7 @@ namespace Queue.Events
     public static class GenericEventHandle
     {
         private static event Action<string, Guid, object, bool> GenericEvent;
-        private static event Func<Guid, Task<object>> ResultEvent;
+        private static event Func<Guid, object> ResultEvent;
         internal static void Register(Action<string, Guid, object, bool> m)
         {
             GenericEvent += m;
@@ -28,14 +28,13 @@ namespace Queue.Events
             }
 
         }
-        internal static void Register(Func<Guid, Task<object>> m)
+        internal static void Register(Func<Guid, object> m)
         {
             ResultEvent += m;
         }
-        public static Task<object> OnResultEvent(Guid id)
+        public static void OnResultEventAsync(Guid id, AsyncCallback callback)
         {
-            return ResultEvent.Invoke(id);
-            //return Task.Factory.StartNew(i => { return ResultEvent.Invoke(id); }, id);
+            ResultEvent.BeginInvoke(id, callback, ResultEvent);
         }
     }
     /// <summary>

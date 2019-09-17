@@ -12,7 +12,7 @@ namespace DatabaseUnitOfWork
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<object> Result(Guid id);
+        void Result(Guid id, AsyncCallback callback);
         /// <summary>
         /// 数据库记录获取, 参数 <see cref="bool"/> sequence 表示是否顺序执行
         /// </summary>

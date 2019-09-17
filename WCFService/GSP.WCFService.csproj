@@ -53,6 +53,7 @@
     <Compile Include="Entity\ReceiveData.cs" />
     <Compile Include="Infrastructure\DESCryptExtensions.cs" />
     <Compile Include="Infrastructure\CompressionExtensions.cs" />
+    <Compile Include="Service\ICallback.cs" />
     <Compile Include="WCFServiceInitialization.cs" />
     <Compile Include="PeristalticConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

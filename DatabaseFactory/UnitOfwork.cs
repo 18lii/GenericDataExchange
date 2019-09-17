@@ -26,10 +26,9 @@ namespace DatabaseUnitOfWork
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<object> Result(Guid id)
+        public void Result(Guid id, AsyncCallback callback)
         {
-            var result = await GenericEventHandle.OnResultEvent(id);
-            return result;
+            GenericEventHandle.OnResultEventAsync(id, callback);
         }
         /// <summary>
         /// 数据库记录获取
