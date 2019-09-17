@@ -21,12 +21,16 @@ namespace DatabaseUnitOfWork
         //{
         //    DatabaseModifyEvent?.Invoke(result);
         //}
+        public object Result(Guid id)
+        {
+            return GenericEventHandle.OnResultEvent(id);
+        }
         /// <summary>
         /// 数据库操作返回，以GUID进行获取，需等待
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public void Result(Guid id, AsyncCallback callback)
+        public void ResultAsync(Guid id, AsyncCallback callback)
         {
             GenericEventHandle.OnResultEventAsync(id, callback);
         }

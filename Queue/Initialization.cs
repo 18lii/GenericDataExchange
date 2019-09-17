@@ -1,6 +1,7 @@
 ﻿using Queue.Events;
 using Queue.Interface;
 using Queue.Peristaltic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,13 +32,14 @@ namespace Queue
             GenericEventHandle.Register(new QueueAttach(context.Troops, context.LoaderSignal, context.ResultSignal).Add);//入列事件，外部
             GenericEventHandle.Register(guid =>
             {
+                Debug.WriteLine("返回委托被调用");
                 object result = null;
-
-                if(context.ResultSignal.TryGetValue(guid, out var signal))
+                if(context.ResultSignal.TryRemove(guid, out var signal))
                 {
-                    if (WaitHandle.WaitAny(signal) == 0)
+                    while (WaitHandle.WaitAny(signal, 20000) == 0)
                     {
-                        context.ResultSignal.TryRemove(guid, out var temp);
+                        Debug.WriteLine("进入循环体调用");
+                        //context.ResultSignal.TryRemove(guid, out var temp);
                         if (context.Result.TryRemove(guid, out var v))
                         {
                             result = v;

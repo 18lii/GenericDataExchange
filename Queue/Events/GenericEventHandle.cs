@@ -32,6 +32,10 @@ namespace Queue.Events
         {
             ResultEvent += m;
         }
+        public static object OnResultEvent(Guid id)
+        {
+            return ResultEvent.Invoke(id);
+        }
         public static void OnResultEventAsync(Guid id, AsyncCallback callback)
         {
             ResultEvent.BeginInvoke(id, callback, ResultEvent);

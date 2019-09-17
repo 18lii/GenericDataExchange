@@ -8,11 +8,17 @@ namespace DatabaseUnitOfWork
     public interface IUnitOfWork
     {
         /// <summary>
+        /// 数据库操作返回，同步
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        object Result(Guid id);
+        /// <summary>
         /// 数据库操作返回，以GUID进行获取，可等待
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        void Result(Guid id, AsyncCallback callback);
+        void ResultAsync(Guid id, AsyncCallback callback);
         /// <summary>
         /// 数据库记录获取, 参数 <see cref="bool"/> sequence 表示是否顺序执行
         /// </summary>

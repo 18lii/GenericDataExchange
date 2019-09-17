@@ -6,7 +6,7 @@ namespace WCFService.Service
     /// <summary>
     /// 服务约定接口
     /// </summary>
-    [ServiceContract]
+    [ServiceContract(CallbackContract =typeof(ICallback))]
     public interface IService
     {
         /// <summary>
@@ -155,7 +155,7 @@ namespace WCFService.Service
         /// <param name="id"></param>
         /// <returns></returns>
         [OperationContract]
-        byte[] Result(byte[] id);
+        void ResultAsync(byte[] id);
     }
 
     // 使用下面示例中说明的数据约定将复合类型添加到服务操作。

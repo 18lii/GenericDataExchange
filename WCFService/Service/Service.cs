@@ -1,7 +1,8 @@
 ﻿using Core.Infrastructure;
 using DatabaseUnitOfWork;
 using System;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.ServiceModel;
 using TransparentAgent.Contract;
 using TransparentAgent.Interface;
 
@@ -10,14 +11,15 @@ namespace WCFService.Service
     /// <summary>
     /// WCF服务类
     /// </summary>
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant, InstanceContextMode = InstanceContextMode.PerCall)]
     public class DataExchangeService : IService
     {
         private readonly IUnitOfWork _db = new UnitOfwork();
-        
+        private readonly ICallback callback = OperationContext.Current.GetCallbackChannel<ICallback>();
         public byte[] Select(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.Get(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.Get(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -36,7 +38,7 @@ namespace WCFService.Service
         public byte[] Insert(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.Insert(receiveData.SqlText, receiveData.Param, receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.Insert(receiveData.SqlText, receiveData.Param, receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -55,7 +57,7 @@ namespace WCFService.Service
         public byte[] Update(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.Update(receiveData.SqlText, receiveData.Param, receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.Update(receiveData.SqlText, receiveData.Param, receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -74,7 +76,7 @@ namespace WCFService.Service
         public byte[] Delete(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.Delete(receiveData.SqlText, receiveData.Param, receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.Delete(receiveData.SqlText, receiveData.Param, receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -93,7 +95,7 @@ namespace WCFService.Service
         public byte[] ExecuteNoQuery(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteNoQuery(receiveData.SqlText, receiveData.Param, receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteNoQuery(receiveData.SqlText, receiveData.Param, receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -112,7 +114,7 @@ namespace WCFService.Service
         public byte[] ExecuteProcedure(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteProcedure(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteProcedure(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -131,7 +133,7 @@ namespace WCFService.Service
         public byte[] ExecuteReader(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteReader(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteReader(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -150,7 +152,7 @@ namespace WCFService.Service
         public byte[] ExecuteScalar(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteScalar(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.ExecuteScalar(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -169,7 +171,7 @@ namespace WCFService.Service
         public byte[] AdapterGet(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.Get(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.Get(receiveData.SqlText[0], receiveData.Param[0], receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -188,7 +190,7 @@ namespace WCFService.Service
         public byte[] AdapterSet(byte[] value)
         {
             var receiveData = value.Decompress<IContractData>();
-            var result = (Tuple<bool, object>)_db.Result(_db.Set(receiveData.SqlText, receiveData.DataSet, receiveData.sequence)).Result;
+            var result = (Tuple<bool, object>)_db.Result(_db.Set(receiveData.SqlText, receiveData.DataSet, receiveData.sequence));
             if (result.Item1)
             {
                 return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
@@ -204,17 +206,14 @@ namespace WCFService.Service
             var id = _db.Set(receiveData.SqlText, receiveData.DataSet, receiveData.sequence);
             return id.Compression();
         }
-        public byte[] Result(byte[] id)
+        public void ResultAsync(byte[] id)
         {
-            var result = (Tuple<bool, object>)_db.Result(id.Decompress<Guid>()).Result;
-            if (result.Item1)
+            Debug.WriteLine("返回服务已被调用");
+            _db.ResultAsync(id.Decompress<Guid>(), ac =>
             {
-                return new ServiceResult(result.Item1, "操作成功", result.Item2).Compression();
-            }
-            else
-            {
-                return new ServiceResult(result.Item1, "操作失败", (string)result.Item2).Compression();
-            }
+                Debug.WriteLine("回调服务已被调用");
+                callback.Reuslt(((Tuple<bool, object>)(((Func<Guid, object>)ac.AsyncState).EndInvoke(ac))).Compression());
+            });
         }
     }
 }
