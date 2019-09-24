@@ -8,33 +8,41 @@ namespace Database.Infrastructure
 {
     internal class AdapterContext : BaseContext, IAdapterContext
     {
-        public AdapterContext(ISqlAdapterDatabaseUtil dbUtil) : base(dbUtil) { }
+        public AdapterContext(ISqlAdapterAccessor dbUtil) : base(dbUtil) { }
         public Tuple<bool, object> Activing(Tuple<AptOperate, string[], DataSet[]> context)
         {
             var operate = context.Item1;
             var sqlTexts = context.Item2;
             var dataSets = context.Item3;
             var result = default(Tuple<bool, object>);
-            for (var i = 0; i < sqlTexts.Length; i++)
+            SetConnection(out var id);
+            if(sqlTexts.Length > 0)
             {
-                var command = new SqlCommand(sqlTexts[i], SetConnection(), Transaction);
-                command.CommandTimeout = 60;
-                switch (operate)
+                for (var i = 0; i < sqlTexts.Length; i++)
                 {
-                    case AptOperate.Get:
-                        result = Accept(operate, command);
-                        break;
-                    case AptOperate.Set:
-                        result = Accept(operate, command, dataSets[i]);
-                        break;
+                    var command = new SqlCommand(sqlTexts[i], Connection[id], Transaction[id]);
+                    command.CommandTimeout = 60;
+                    switch (operate)
+                    {
+                        case AptOperate.Get:
+                            result = Accept(operate, command);
+                            break;
+                        case AptOperate.Set:
+                            if(dataSets.Length > 0)
+                            {
+                                result = Accept(operate, command, dataSets[i]);
+                            }
+                            break;
+                    }
+                    command.Dispose();
                 }
-                command.Dispose();
+                var commitResult = DbCommit(id);
+                if (!commitResult.Item1)
+                {
+                    result = commitResult;
+                };
             }
-            var commitResult = DbCommit();
-            if (!commitResult.Item1)
-            {
-                result = commitResult;
-            };
+            
             return new Tuple<bool, object>(result.Item1, result.Item2);
         }
     }

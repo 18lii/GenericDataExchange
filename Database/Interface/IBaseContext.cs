@@ -10,9 +10,9 @@ namespace Database.Interface
     public interface IBaseContext
     {
         string ConnectionString { get; set; }
-        SqlConnection Connection { get; set; }
-        SqlTransaction Transaction { get; set; }
-        Tuple<bool, object> DbCommit();
-        Tuple<bool, object> DbRollback();
+        ConcurrentDictionary<Guid, SqlConnection> Connection { get; set; }
+        ConcurrentDictionary<Guid, SqlTransaction> Transaction { get; set; }
+        Tuple<bool, object> DbCommit(Guid id);
+        Tuple<bool, object> DbRollback(Guid id);
     }
 }

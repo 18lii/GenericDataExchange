@@ -2,6 +2,7 @@
 using Database.Helper;
 using Database.Interface;
 using System;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -9,30 +10,39 @@ namespace Database.Infrastructure
 {
     internal abstract class BaseContext : IBaseContext
     {
-        private readonly ISqlCommandDatabaseUtil _comUtil;
-        private readonly ISqlAdapterDatabaseUtil _aptUtil;
-        protected BaseContext(ISqlCommandDatabaseUtil cmdUtil)
+        private readonly ISqlCommandAccessor _comUtil;
+        private readonly ISqlAdapterAccessor _aptUtil;
+        protected BaseContext()
+        {
+            Connection = new ConcurrentDictionary<Guid, SqlConnection>();
+            Transaction = new ConcurrentDictionary<Guid, SqlTransaction>();
+        }
+        protected BaseContext(ISqlCommandAccessor cmdUtil)
+            : this()
         {
             _comUtil = cmdUtil;
+
             
         }
-        protected BaseContext(ISqlAdapterDatabaseUtil aptUtil)
+        protected BaseContext(ISqlAdapterAccessor aptUtil)
+            : this()
         {
             _aptUtil = aptUtil;
         }
         public string ConnectionString { get; set; }
-        protected SqlConnection SetConnection()
+        protected void SetConnection(out Guid guid)
         {
-            Connection = new SqlConnection(ConnectionString);
-            if (Connection.State == ConnectionState.Closed)
+            var id = Guid.NewGuid();
+            Connection.TryAdd(id, new SqlConnection(ConnectionString));
+            if (Connection[id].State == ConnectionState.Closed)
             {
-                Connection.Open();
-                Transaction = Connection.BeginTransaction();
+                Connection[id].Open();
+                Transaction.TryAdd(id, Connection[id].BeginTransaction());
             }
-            return Connection;
+            guid = id;
         }
-        public SqlConnection Connection { get; set; }
-        public SqlTransaction Transaction { get; set; }
+        public ConcurrentDictionary<Guid, SqlConnection> Connection { get; set; }
+        public ConcurrentDictionary<Guid, SqlTransaction> Transaction { get; set; }
         
         /// <summary>
         /// 数据库提交方法
@@ -40,26 +50,26 @@ namespace Database.Infrastructure
         /// <param name="command"></param>
         /// <param name="dbOperate"></param>
         /// <returns></returns>
-        public Tuple<bool, object> Accept(SqlConnection connection, CmdOperate operate, string sqlText, DynamicParameters param, SqlTransaction transaction)
+        public Tuple<bool, object> Accept(Guid id, CmdOperate operate, string sqlText, DynamicParameters param)
         {
             switch (operate)
             {
                 case CmdOperate.Select:
-                    return _comUtil.ExecuteReader(connection, sqlText, param, transaction);
+                    return _comUtil.ExecuteReader(Connection[id], sqlText, param, Transaction[id]);
                 case CmdOperate.Insert:
-                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction); ;
+                    return _comUtil.ExecuteNoQuery(Connection[id], sqlText, param, Transaction[id]); ;
                 case CmdOperate.Update:
-                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                    return _comUtil.ExecuteNoQuery(Connection[id], sqlText, param, Transaction[id]);
                 case CmdOperate.Delete:
-                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                    return _comUtil.ExecuteNoQuery(Connection[id], sqlText, param, Transaction[id]);
                 case CmdOperate.ExecuteScalar:
-                    return _comUtil.ExecuteScalar(connection, sqlText, param, transaction);
+                    return _comUtil.ExecuteScalar(Connection[id], sqlText, param, Transaction[id]);
                 case CmdOperate.ExecuteReader:
-                    return _comUtil.ExecuteReader(connection, sqlText, param, transaction);
+                    return _comUtil.ExecuteReader(Connection[id], sqlText, param, Transaction[id]);
                 case CmdOperate.ExecuteNoQuery:
-                    return _comUtil.ExecuteNoQuery(connection, sqlText, param, transaction);
+                    return _comUtil.ExecuteNoQuery(Connection[id], sqlText, param, Transaction[id]);
                 case CmdOperate.ExecuteProcedure:
-                    return _comUtil.ExecuteProcedure(connection, sqlText, param, transaction);
+                    return _comUtil.ExecuteProcedure(Connection[id], sqlText, param, Transaction[id]);
                 default:
                     return new Tuple<bool, object>(false, "错误的数据库操作类型。");
             }
@@ -80,39 +90,60 @@ namespace Database.Infrastructure
         /// 数据库事务提交
         /// </summary>
         /// <returns></returns>
-        public Tuple<bool, object> DbCommit()
+        public Tuple<bool, object> DbCommit(Guid id)
         {
-            try
+            if (Transaction.TryRemove(id, out var tran))
             {
-                    Transaction.Commit();
+                try
+                {
+                    tran.Commit();
                     return new Tuple<bool, object>(true, "Commited");
+                }
+                catch (Exception e)
+                {
+                    tran.Rollback();
+                    return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
+                }
+                finally
+                {
+                    if(Connection.TryRemove(id, out var conn))
+                    {
+                        conn.Close();
+                        conn.Dispose();
+                    }
+                }
             }
-            catch (Exception e)
+            else
             {
-                Transaction.Rollback();
-                return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
+                return new Tuple<bool, object>(true, "提交了不存在的事务！");
             }
-            finally
-            {
-                Connection.Close();
-                Connection.Dispose();
-            }
+            
         }
-        public Tuple<bool, object> DbRollback()
+        public Tuple<bool, object> DbRollback(Guid id)
         {
-            try
+            if(Transaction.TryRemove(id, out var tran))
             {
-                Transaction.Rollback();
-                    return new Tuple<bool, object>(true, "Commited");
+                try
+                {
+                    tran.Rollback();
+                    return new Tuple<bool, object>(true, "Rollbacked");
+                }
+                catch (Exception e)
+                {
+                    return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
+                }
+                finally
+                {
+                    if(Connection.TryRemove(id, out var conn))
+                    {
+                        conn.Close();
+                        conn.Dispose();
+                    }
+                }
             }
-            catch (Exception e)
+            else
             {
-                return new Tuple<bool, object>(false, new ExceptionMessage(e).ExMessage);
-            }
-            finally
-            {
-                Connection.Close();
-                Connection.Dispose();
+                return new Tuple<bool, object>(true, "回滚了不存在的事务！");
             }
         }
     }

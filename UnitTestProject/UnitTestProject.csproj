@@ -48,11 +48,11 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\IoCEntity.cs" />
-    <Compile Include="Infrastructure\IoCKernelImpl.cs" />
     <Compile Include="Infrastructure\ITestInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\CoreTest.cs" />
@@ -65,21 +65,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\GSP.Core.csproj">
-      <Project>{BAA1BC30-4A51-40A0-B074-7B5C5A556F9D}</Project>
-      <Name>GSP.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseUnitOfWork.csproj">
-      <Project>{6AC108A2-0FB0-4F33-9012-FDAE304C1BF2}</Project>
-      <Name>GSP.DatabaseUnitOfWork</Name>
+    <ProjectReference Include="..\AdvancedDependencyContainer\GSP.AdvancedDependencyContainer.csproj">
+      <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
+      <Name>GSP.AdvancedDependencyContainer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Database\GSP.Database.csproj">
       <Project>{B934EE7D-43BC-445B-B722-5D9A41481B43}</Project>
       <Name>GSP.Database</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Queue\GSP.Queue.csproj">
-      <Project>{A0ABD798-DD5B-43B4-BEFD-8DC9550BACD2}</Project>
-      <Name>GSP.Queue</Name>
     </ProjectReference>
     <ProjectReference Include="..\TransparentAgent\GSP.TransparentAgent.csproj">
       <Project>{D2874C00-A880-4029-B0FF-DE1D7CC30632}</Project>

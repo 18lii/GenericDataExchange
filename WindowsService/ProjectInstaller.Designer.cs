@@ -40,7 +40,7 @@
             // serviceInstaller1
             // 
             this.serviceInstaller1.DisplayName = "GSP数据交换服务";
-            this.serviceInstaller1.ServiceName = "Service1";
+            this.serviceInstaller1.ServiceName = "WCF Data Exchange Service";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

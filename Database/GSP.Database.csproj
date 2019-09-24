@@ -51,25 +51,18 @@
     <Compile Include="Infrastructure\AdapterContext.cs" />
     <Compile Include="Infrastructure\BaseContext.cs" />
     <Compile Include="Infrastructure\CommandContext.cs" />
-    <Compile Include="Initialization.cs" />
     <Compile Include="Interface\IAdapterContext.cs" />
-    <Compile Include="Interface\ISqlAdapterDatabaseUtil.cs" />
+    <Compile Include="Interface\ISqlAdapterAccessor.cs" />
     <Compile Include="Interface\IBaseContext.cs" />
     <Compile Include="Interface\ICommandContext.cs" />
-    <Compile Include="Interface\ISqlCommandDatabaseUtil.cs" />
+    <Compile Include="Interface\ISqlCommandAccessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\SqlAdapterDatabaseUtil.cs" />
-    <Compile Include="Util\SqlCommandDatabaseUtil.cs" />
+    <Compile Include="Accessor\SqlAdapterAccessor.cs" />
+    <Compile Include="Accessor\SqlCommandAccessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\Core\GSP.Core.csproj">
-      <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
-      <Name>GSP.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

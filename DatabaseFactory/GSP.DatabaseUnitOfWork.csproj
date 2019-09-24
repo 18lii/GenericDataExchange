@@ -56,10 +56,6 @@
       <Project>{b934ee7d-43bc-445b-b722-5d9a41481b43}</Project>
       <Name>GSP.Database</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Queue\GSP.Queue.csproj">
-      <Project>{a0abd798-dd5b-43b4-befd-8dc9550bacd2}</Project>
-      <Name>GSP.Queue</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

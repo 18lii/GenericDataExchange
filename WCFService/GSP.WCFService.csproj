@@ -49,33 +49,34 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entity\DbUnitOfWork.cs" />
-    <Compile Include="Entity\IoCKernelImpl.cs" />
     <Compile Include="Entity\ReceiveData.cs" />
+    <Compile Include="Helper\DbOperate.cs" />
+    <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Infrastructure\DESCryptExtensions.cs" />
     <Compile Include="Infrastructure\CompressionExtensions.cs" />
-    <Compile Include="Service\ICallback.cs" />
-    <Compile Include="WCFServiceInitialization.cs" />
+    <Compile Include="Infrastructure\IoCServiceProvider.cs" />
+    <Compile Include="Infrastructure\IoCServiceBehavior.cs" />
+    <Compile Include="Interface\IDbUnitOfWork.cs" />
+    <Compile Include="Service\IServiceCallback.cs" />
+    <Compile Include="DependencyConfiguration.cs" />
     <Compile Include="PeristalticConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\Service.cs" />
-    <Compile Include="Service\IService.cs" />
+    <Compile Include="Service\DataExchangeService.cs" />
+    <Compile Include="Service\IDataExchangeService.cs" />
+    <Compile Include="WCFInitialization.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\GSP.Core.csproj">
+    <ProjectReference Include="..\AdvancedDependencyContainer\GSP.AdvancedDependencyContainer.csproj">
       <Project>{baa1bc30-4a51-40a0-b074-7b5c5a556f9d}</Project>
-      <Name>GSP.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DatabaseFactory\GSP.DatabaseUnitOfWork.csproj">
-      <Project>{6ac108a2-0fb0-4f33-9012-fdae304c1bf2}</Project>
-      <Name>GSP.DatabaseUnitOfWork</Name>
+      <Name>GSP.AdvancedDependencyContainer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Database\GSP.Database.csproj">
       <Project>{b934ee7d-43bc-445b-b722-5d9a41481b43}</Project>
       <Name>GSP.Database</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Queue\GSP.Queue.csproj">
+    <ProjectReference Include="..\Sequencer\GSP.Sequencer.csproj">
       <Project>{a0abd798-dd5b-43b4-befd-8dc9550bacd2}</Project>
-      <Name>GSP.Queue</Name>
+      <Name>GSP.Sequencer</Name>
     </ProjectReference>
     <ProjectReference Include="..\TransparentAgent\GSP.TransparentAgent.csproj">
       <Project>{d2874c00-a880-4029-b0ff-de1d7cc30632}</Project>

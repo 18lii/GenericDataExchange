@@ -1,12 +1,14 @@
-﻿using Core.Infrastructure;
-using Core.Interface;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Configuration;
+using System.Reflection;
 using System.ServiceModel;
+using System.ServiceModel.Description;
 using UnitTestProject.Infrastructure;
 using WCFService;
+using WCFService.Infrastructure;
 using WCFService.Service;
+using AdvancedDependencyContainer.Configurations;
 
 namespace UnitTestProject.Tests
 {
@@ -27,13 +29,10 @@ namespace UnitTestProject.Tests
                 "30E9AA65BA938F545A6CC1DB3027CED9"
             };
                 var result = connStr[0].Decryptogram(connStr[1].Decryptogram());
-                var kernel = new IoCKernelImpl();
-                kernel.Bind<IIoCKernel>().To<IoCKernelImpl>();
                 //初始化核心入列事件依赖
                 //初始化核心无返回值消息处理事件依赖
                 //初始化核心有返回值消息处理事件依赖
                 //初始化数据库依赖
-                kernel.Resolve<Database.Initialization>().BindToCore();
                 //初始化队列器依赖，服务启动
                 //获取数据工厂
                 Assert.IsTrue(true);
@@ -46,15 +45,70 @@ namespace UnitTestProject.Tests
         [TestMethod]
         public void WindowsServiceTest()
         {
-            
-            ServiceHost host = new ServiceHost(typeof(DataExchangeService));
-            var strs = new string[2];
-            strs[0] = ConfigurationManager.AppSettings["DESString"];
-            strs[1] = ConfigurationManager.AppSettings["DESKey"];
-            WCFServiceInitialization.Initialization(strs);
+            //读取密文,初始化WCF服务组件
+            new WCFInitialization().Initialization(new string[]
+            {
+                ConfigurationManager.AppSettings["DESString"],
+                ConfigurationManager.AppSettings["DESKey"]
+            });
+
+            //读取服务基地址
+            var baseAddr = ConfigurationManager.AppSettings["baseAddress"];
+            var basePort = int.Parse(ConfigurationManager.AppSettings["port"]);
+            var httpPort = basePort + 1;
+            var tcpBinding = new NetTcpBinding
+            {
+                Name = "NetTcpBinding_IDataExchangeService",
+                MaxBufferPoolSize = int.Parse(ConfigurationManager.AppSettings["maxBufferPoolSize"]),
+                MaxBufferSize = int.Parse(ConfigurationManager.AppSettings["maxBufferSize"]),
+                MaxReceivedMessageSize = int.Parse(ConfigurationManager.AppSettings["maxReceivedMessageSize"]),
+                MaxConnections = int.Parse(ConfigurationManager.AppSettings["maxConnections"]),
+                ListenBacklog = int.Parse(ConfigurationManager.AppSettings["listenBacklog"]),
+                OpenTimeout = TimeSpan.Parse(ConfigurationManager.AppSettings["openTimeout"]),
+                CloseTimeout = TimeSpan.Parse(ConfigurationManager.AppSettings["closeTimeout"]),
+                SendTimeout = TimeSpan.Parse(ConfigurationManager.AppSettings["sendTimeout"]),
+                ReceiveTimeout = TimeSpan.Parse(ConfigurationManager.AppSettings["receiveTimeout"]),
+            };
+
+            //安全模式，重要
+            tcpBinding.Security.Mode = (SecurityMode)int.Parse(ConfigurationManager.AppSettings["securityMode"]);
+            tcpBinding.ReaderQuotas.MaxArrayLength = int.Parse(ConfigurationManager.AppSettings["maxArrayLength"]);
+            tcpBinding.ReaderQuotas.MaxStringContentLength = int.Parse(ConfigurationManager.AppSettings["maxStringContentLength"]);
+            tcpBinding.ReaderQuotas.MaxBytesPerRead = int.Parse(ConfigurationManager.AppSettings["maxBytesPerRead"]);
+            bool httpGetEnabled = true;
+
+            //初始化宿主
+            var host = new ServiceHost(typeof(DataExchangeService), new Uri(string.Format("net.tcp://{0}:{1}", baseAddr, basePort)));
+            host.Description.Name = "WCFService.Service.DataExchangeService";
+            host.AddServiceEndpoint(typeof(IDataExchangeService), tcpBinding, "/DataExchangeService");
+            host.Description.Behaviors.Add(new ServiceMetadataBehavior
+            {
+                HttpGetEnabled = httpGetEnabled,
+                HttpGetUrl = new Uri(string.Format("http://{0}:{1}/Metadata", baseAddr, httpPort))
+            });
+            host.Description.Behaviors.Add(new ServiceThrottlingBehavior
+            {
+                MaxConcurrentCalls = int.Parse(ConfigurationManager.AppSettings["maxConcurrentCalls"]),
+                MaxConcurrentInstances = int.Parse(ConfigurationManager.AppSettings["maxConcurrentInstances"]),
+                MaxConcurrentSessions = int.Parse(ConfigurationManager.AppSettings["maxConcurrentSessions"])
+            });
+            host.Description.Behaviors.Add(host.GetType().Assembly.CreateInstance
+                    (
+                        "System.ServiceModel.Dispatcher.DataContractSerializerServiceBehavior",
+                        true,
+                        BindingFlags.CreateInstance |
+                        BindingFlags.Instance |
+                        BindingFlags.NonPublic,
+                        null,
+                        new object[] { false, int.Parse(ConfigurationManager.AppSettings["maxConcurrentSessions"]) },
+                        null,
+                        null
+                    ) as IServiceBehavior);
+
+            //服务打开
             host.Open();
             Console.ReadLine();
-            host.Close();
+            //host.Close();
         }
     }
 }

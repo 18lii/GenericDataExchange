@@ -10,7 +10,7 @@ namespace Database.Infrastructure
 {
     internal class CommandContext : BaseContext, ICommandContext
     {
-        public CommandContext(ISqlCommandDatabaseUtil dbUtil) : base(dbUtil) { }
+        public CommandContext(ISqlCommandAccessor dbUtil) : base(dbUtil) { }
         /// <summary>
         /// 数据库上下文操作方法
         /// </summary>
@@ -22,6 +22,7 @@ namespace Database.Infrastructure
             var operate = context.Item1;
             var parameters = context.Item2;
             var result = default(Tuple<bool, object>);
+            SetConnection(out var id);
             if (parameters != null)
             {
                 Parallel.ForEach(parameters, kv =>
@@ -33,27 +34,32 @@ namespace Database.Infrastructure
                         {
                             dyParam.Add(item.Key.ToString(), item.Value);
                         }
-                        result = Accept(SetConnection(), operate, kv.Key, dyParam, Transaction);
+                        result = Accept(id, operate, kv.Key, dyParam);
                     }
                     else
                     {
-                        result = Accept(SetConnection(), operate, kv.Key, dyParam, Transaction);
+                        result = Accept(id, operate, kv.Key, dyParam);
                     }
                 });
-            }
-            if (result.Item1)
-            {
-                var commitResult = DbCommit();
-                if (!commitResult.Item1)
+                if (result.Item1)
                 {
-                    result = commitResult;
+                    var commitResult = DbCommit(id);
+                    if (!commitResult.Item1)
+                    {
+                        result = commitResult;
+                    }
                 }
+                else
+                {
+                    DbRollback(id);
+                }
+                return result;
             }
             else
             {
-                DbRollback();
+                DbRollback(id);
+                return new Tuple<bool, object>(false, "参数错误，没有要执行的SQL文");
             }
-            return result;
         }
     }
 }
