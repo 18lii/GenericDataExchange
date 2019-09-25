@@ -9,6 +9,7 @@ using WCFService;
 using WCFService.Infrastructure;
 using WCFService.Service;
 using AdvancedDependencyContainer.Configurations;
+using WCFService.Interface;
 
 namespace UnitTestProject.Tests
 {

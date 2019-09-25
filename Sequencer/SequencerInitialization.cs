@@ -5,11 +5,11 @@ using System.Threading;
 
 namespace Sequencer
 {
-    public class Initialization
+    public class SequencerInitialization
     {
         private readonly BindContext _bindContext;
         private readonly IPeristalticConfiguration _configuration;
-        public Initialization(IPeristalticConfiguration configuration)
+        public SequencerInitialization(IPeristalticConfiguration configuration)
         {
             _bindContext = new BindContext();
             _configuration = configuration;

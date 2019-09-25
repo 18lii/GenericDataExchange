@@ -1,7 +1,7 @@
 ﻿using AdvancedDependencyContainer.Interface;
 using Sequencer.Interface;
-using WCFService.Entity;
 using WCFService.Interface;
+using WCFService.UnitOfWork;
 
 namespace WCFService
 {
@@ -18,7 +18,9 @@ namespace WCFService
         /// <param name="codes"></param>
         public IDependencyBindContext BindDependency()
         {
-            //绑定依赖组件
+            //使用app.config配置文件进行依赖组件绑定
+            DependencyBindContext.UseAppConfiguration("dependencyConfiguration");
+            //使用编码进行依赖组件绑定
             DependencyBindContext.IoCKernel
                 .Bind<IDbUnitOfWork>().To<UnitOfwork>()//绑定数据库工作单元
                 .Bind<IPeristalticConfiguration>().To<PeristalticConfiguration>();//绑定定序器配置程序依赖

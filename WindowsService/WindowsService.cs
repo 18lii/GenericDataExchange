@@ -6,6 +6,7 @@ using System.Configuration;
 using System;
 using System.ServiceModel.Description;
 using System.Reflection;
+using WCFService.Interface;
 
 namespace WindowsService
 {

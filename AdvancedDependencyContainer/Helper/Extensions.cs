@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdvancedDependencyContainer.Helper
 {
     /// <summary>
     /// 对象转换扩展类
     /// </summary>
-    public static class ObjectExtension
+    internal static class ObjectExtension
     {
         /// <summary>
         ///  把对象类型转化为指定类型，转化失败时返回该类型默认值
@@ -73,7 +68,7 @@ namespace AdvancedDependencyContainer.Helper
     /// <summary>
     /// 枚举说明帮助类
     /// </summary>
-    public static class EnumExtension
+    internal static class EnumExtension
     {
         /// <summary>
         ///  获取枚举项的Description特性的描述文字
@@ -94,7 +89,7 @@ namespace AdvancedDependencyContainer.Helper
     /// <summary>
     /// 对象类型帮助类
     /// </summary>
-    public static class TypeExtension
+    internal static class TypeExtension
     {
         /// <summary>
         ///  判断指定类型是否为数值类型

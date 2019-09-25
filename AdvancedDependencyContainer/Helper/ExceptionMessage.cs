@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AdvancedDependencyContainer.Helper
 {
-    public class ExceptionMessage
+    internal class ExceptionMessage
     {
         /// <summary>
         ///  用户信息，用于报告给用户的异常消息

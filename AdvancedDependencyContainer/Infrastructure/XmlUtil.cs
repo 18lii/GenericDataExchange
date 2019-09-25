@@ -1,7 +1,5 @@
-﻿using AdvancedDependencyContainer.Entities;
-using AdvancedDependencyContainer.Helper;
+﻿using AdvancedDependencyContainer.Helper;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -11,15 +9,16 @@ namespace AdvancedDependencyContainer.Infrastructure
 {
     internal static class XmlUtil
     {
+
+
         /// <summary>
-        /// 反序列化
+        /// 反序列化xml文档为T类型对象
         /// </summary>
-        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static IList<Bony> Deserialize(this BonyRoot value, string path)
+        public static T Deserialize<T>(string path)
         {
-            var type = typeof(BonyRoot);
             var xmlDoc = new XmlDocument();
             try
             {
@@ -27,51 +26,55 @@ namespace AdvancedDependencyContainer.Infrastructure
                 var outer = xmlDoc.OuterXml;
                 using (var sr = new StringReader(outer))
                 {
-                    var xmldes = new XmlSerializer(type);
+                    var xmldes = new XmlSerializer(typeof(T));
                     var des = xmldes.Deserialize(sr);
-                    return (des as BonyRoot).Records;
+                    return des.CastTo<T>();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return new List<Bony>();
+                return default;
             }
         }
         /// <summary>
-        /// 序列化
+        /// 序列化对象为xml
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="obj"></param>
         /// <returns></returns>
-        public static string Serializer(this BonyRoot value)
+        internal static string Serializer<T>(T obj)
         {
-            var type = typeof(BonyRoot);
-            var stream = new MemoryStream();
-            var xml = new XmlSerializer(type);
-            var setting = new XmlWriterSettings
+            try
             {
-                Indent = true,
-                IndentChars = "    ",
-                NewLineChars = "\r\n",
-                Encoding = Encoding.UTF8
-            };
-            using (var xw = XmlWriter.Create(stream, setting))
-            {
-                //序列化对象
-                try
+                var xmlText = new StringBuilder();
+                using (var stream = new MemoryStream())
                 {
-                    xml.Serialize(xw, value);
-                    stream.Position = 0;
-                    using(var sr = new StreamReader(stream))
+                    var xml = new XmlSerializer(typeof(T));
+                    var xmlns = new XmlSerializerNamespaces();
+                    var setting = new XmlWriterSettings
                     {
-                        var str = sr.ReadToEnd();
-                        return str;
+                        Indent = true,
+                        IndentChars = "    ",
+                        NewLineChars = "\r\n",
+                        Encoding = Encoding.UTF8
+                    };
+                    using (var writer = XmlWriter.Create(stream, setting))
+                    {
+                        xmlns.Add("", "");
+                        xml.Serialize(writer, obj, xmlns);
+                    }
+                    using (var reader = new StreamReader(stream))
+                    {
+                        stream.Position = 0;
+                        xmlText.Append(reader.ReadToEnd());
                     }
                 }
-                catch (Exception e)
-                {
-                    return new ExceptionMessage(e).ExMessage;
-                }
+                return xmlText.ToString();
             }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
+            
         }
     }
 }

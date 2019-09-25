@@ -14,7 +14,7 @@ namespace WCFService.Service
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall)]
     public class DataExchangeService : IDataExchangeService
     {
-        private IDbUnitOfWork _dbUnitOfWork;
+        private readonly IDbUnitOfWork _dbUnitOfWork;
         public DataExchangeService(IDbUnitOfWork dbUnitOfWork)
         {
             _dbUnitOfWork = dbUnitOfWork;

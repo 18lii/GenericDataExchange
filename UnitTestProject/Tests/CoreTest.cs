@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnitTestProject.Infrastructure;
 using WCFService.Infrastructure;
+using AdvancedDependencyContainer.Infrastructure;
+using AdvancedDependencyContainer.Entities;
 
 namespace UnitTestProject.Tests
 {
@@ -49,6 +51,40 @@ namespace UnitTestProject.Tests
             //var model = kernel.Resolve<IoCEntity>();
             //model.Ti.Name = "111";
             //Assert.IsInstanceOfType(model, typeof(IoCEntity));
+        }
+        [TestMethod]
+        public void XmlSerializer()
+        {
+            //var result = XmlUtil.Deserialize<DependencyContainerConfiguration>(@"E:\GitHub\GenericDataExchange\AdvancedDependencyContainer\ContainerConfiguration.xml");
+            //foreach(var item in result.Assmblies)
+            //{
+            //    foreach(var bind in item.Binds)
+            //    {
+            //        var s = bind.Key.Location;
+            //        var n = bind.Key.Name;
+            //        var e = bind.Val.Location;
+            //        var c = bind.Val.Name;
+            //        var str = s + "." + n + "." + "BindTo" + e + "." + c;
+            //    }
+            //}
+            //XmlUtil.Serializer(new DependencyContainerConfiguration
+            //{
+            //    Assmblies = new List<AssemblyCollection>
+            //    {
+            //        new AssemblyCollection
+            //        {
+            //            Provider = "1",
+            //            Binds = new List<BindCollection>
+            //            {
+            //                new BindCollection
+            //                {
+            //                    Key = new BindElement{ Location = "a", Name = "b"},
+            //                    Val = new BindElement{ Location = "c", Name = "d"}
+            //                }
+            //            }
+            //        }
+            //    }
+            //});
         }
     }
 }

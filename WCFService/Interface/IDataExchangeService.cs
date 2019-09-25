@@ -1,8 +1,6 @@
 ﻿using System.ServiceModel;
-using System.Threading.Tasks;
-using TransparentAgent.Interface;
 
-namespace WCFService.Service
+namespace WCFService.Interface
 {
     /// <summary>
     /// 服务约定接口

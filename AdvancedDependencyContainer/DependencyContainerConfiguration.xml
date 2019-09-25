@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--此文件用于配置依赖组件绑定-->
+<dependencyContainerConfiguration>
+  <dependency>
+    <assembly provider="Database">
+      <bind>
+        <add contract="Interface.ICommandContext" realization="Infrastructure.CommandContext" />
+        <add contract="Interface.IAdapterContext" realization="Infrastructure.AdapterContext" />
+        <add contract="Interface.ISqlAdapterAccessor" realization="Accessor.SqlAdapterAccessor" />
+        <add contract="Interface.ISqlCommandAccessor" realization="Accessor.SqlCommandAccessor" />
+      </bind>
+    </assembly>
+  </dependency>
+</dependencyContainerConfiguration> 

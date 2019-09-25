@@ -55,7 +55,7 @@
     <Compile Include="Interface\IPeristalticConfiguration.cs" />
     <Compile Include="Interface\IGenericEventHandle.cs" />
     <Compile Include="Interface\IPeristalticEventArg.cs" />
-    <Compile Include="Initialization.cs" />
+    <Compile Include="SequencerInitialization.cs" />
     <Compile Include="Interface\IBindContext.cs" />
     <Compile Include="Interface\IQueueModel.cs" />
     <Compile Include="Interface\IResultEventArgs.cs" />

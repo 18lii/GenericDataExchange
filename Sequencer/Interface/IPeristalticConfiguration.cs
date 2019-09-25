@@ -3,7 +3,7 @@
 namespace Sequencer.Interface
 {
     /// <summary>
-    /// 线程配置接口，用于配置线程的对象类型及处理方法，在<see cref="Configuration"/>方法中配置以下项：
+    /// 定序器线程配置接口，用于配置线程的对象类型及处理方法，在<see cref="Configuration"/>方法中配置以下项：
     /// <para><see cref="void"/> <see cref="IBindContext.Bind{T}(string, Action{T}, bool)"/>用于绑定无返回值处理方法；</para>
     /// <para><see cref="void"/> <see cref="IBindContext.BindAsync{T}(string, Action{T}, AsyncCallback, bool)"/>用于绑定带有异步回调函数，无返回值处理方法；</para>
     /// <para><see cref="void"/> <see cref="IBindContext.Bind{T, TResult}(string, Func{T, TResult}, bool)"/>
@@ -14,11 +14,11 @@ namespace Sequencer.Interface
     public interface IPeristalticConfiguration
     {
         /// <summary>
-        /// 线程配置上下文
+        /// 定序器线程配置上下文
         /// </summary>
         IBindContext Context { get; set; }
         /// <summary>
-        /// 线程配置方法
+        /// 定序器线程配置方法
         /// 使用属性<see cref="IBindContext.Bind{T}()"/>方法或<see cref="IBindContext.BindAsync{T}()"/>进行线程绑定,
         /// 所有经绑定的线程均为驻留线程
         /// </summary>

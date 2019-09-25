@@ -50,40 +50,47 @@ namespace AdvancedDependencyContainer.Dependency
         }
         public object GetValue(Type type, object parameter)
         {
-            object analytical(Type parameterType)
+            try
             {
-                var constructorInfos = parameterType.GetConstructors();
-                object instance = null;
-                foreach (var conInfo in constructorInfos)
+                object analytical(Type parameterType)
                 {
-                    var parameters = conInfo.GetParameters();
-                    if (parameters.Length > 0)
+                    var constructorInfos = parameterType.GetConstructors();
+                    object instance = null;
+                    foreach (var conInfo in constructorInfos)
                     {
-                        var paras = conInfo.GetParameters();
-                        var args = new List<object>();
+                        var parameters = conInfo.GetParameters();
+                        if (parameters.Length > 0)
+                        {
+                            var paras = conInfo.GetParameters();
+                            var args = new List<object>();
 
-                        foreach (var para in paras)
-                        {
-                            if (IoCContext.Context.DIManager.ContainsKey(para.ParameterType))
+                            foreach (var para in paras)
                             {
-                                args.Add(analytical(IoCContext.Context.DIManager.GetTypeInfo(para.ParameterType)));
+                                if (IoCContext.Context.DIManager.ContainsKey(para.ParameterType))
+                                {
+                                    args.Add(analytical(IoCContext.Context.DIManager.GetTypeInfo(para.ParameterType)));
+                                }
                             }
+                            if (args.Count < parameters.Length)
+                            {
+                                args.Add(parameter);
+                            }
+                            instance = Activator.CreateInstance(parameterType, args.ToArray());
+                            break;
                         }
-                        if (args.Count < parameters.Length)
+                        else
                         {
-                            args.Add(parameter);
+                            return Activator.CreateInstance(parameterType);
                         }
-                        instance = Activator.CreateInstance(parameterType, args.ToArray());
-                        break;
                     }
-                    else
-                    {
-                        return Activator.CreateInstance(parameterType);
-                    }
-                }
-                return instance;
-            };
-            return analytical(type);
+                    return instance;
+                };
+                return analytical(type);
+            }
+            catch
+            {
+                return default;
+            }
         }
     }
 }

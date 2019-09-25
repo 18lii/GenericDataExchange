@@ -14,7 +14,7 @@ namespace Sequencer
      * 2019-9-5  
      * 线程绑定器
      * 使用<see cref="IBindContext"/>公共接口，于外部配置线程所必须的类型绑定及事件处理方法绑定
-     * 于外部初始化方法中一次性调用<see cref="Initialization.PeristalticStart(IPeristalticConfiguration)"/>
+     * 于外部初始化方法中一次性调用<see cref="SequencerInitialization.PeristalticStart(IPeristalticConfiguration)"/>
      * 以启动线程
      * 
      **/

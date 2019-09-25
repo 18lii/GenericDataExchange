@@ -8,7 +8,7 @@ using System.Data;
 using WCFService.Helper;
 using WCFService.Interface;
 
-namespace WCFService.Entity
+namespace WCFService.UnitOfWork
 {
     public class UnitOfwork : IDbUnitOfWork
     {
