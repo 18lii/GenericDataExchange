@@ -1,11 +1,10 @@
 ﻿using AdvancedDependencyContainer.Interface;
-using AdvancedDependencyContainer.Event;
 using System;
 
 namespace AdvancedDependencyContainer.Dependency
 {
     /// <summary>
-    /// IoC内核类
+    /// IoC内核类，依赖组件绑定与实例获取
     /// </summary>
     internal class IoCKernel : IIoCKernel
     {

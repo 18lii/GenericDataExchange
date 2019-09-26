@@ -27,45 +27,66 @@ namespace AdvancedDependencyContainer.Configurations
     /// <summary>
     /// 定义ROOT节
     /// </summary>
-    [XmlRoot("dependencyContainerConfiguration")]
-    internal sealed class DependencyContainerXmlConfiguration
+    [XmlRoot("dependencyComponentConfiguration")]
+    public sealed class DependencyComponentXmlConfiguration
     {
+        /// <summary>
+        /// dependency节点
+        /// </summary>
         [XmlElement("dependency")]
         public XmlAssemblyCollection Dependency { get; set; }
     }
     /// <summary>
-    /// 定义assembly节
+    /// 定义assembly节点
     /// </summary>
-    internal sealed class XmlAssemblyCollection
+    public sealed class XmlAssemblyCollection
     {
+        /// <summary>
+        /// assembly节点集合
+        /// </summary>
         [XmlElement("assembly")]
-        public List<XmlBindCollection> Assemblies { get; set; }
+        public List<XmlAssemblyElement> Assemblies { get; set; }
     }
     /// <summary>
-    /// 定义bind节，表示assembly节点内含属性provider，子节点bind，
+    /// 定义binds节点
     /// </summary>
-    internal sealed class XmlBindCollection
+    public sealed class XmlAssemblyElement
     {
+        /// <summary>
+        /// assembly节点属性provider
+        /// </summary>
         [XmlAttribute("provider")]
         public string Provider { get; set; }
+        /// <summary>
+        /// binds节点
+        /// </summary>
+        [XmlElement("binds")]
+        public XmlBindCollection Binds { get; set; }
+    }
+    /// <summary>
+    /// 定义bind节点
+    /// </summary>
+    public sealed class XmlBindCollection
+    {
+        /// <summary>
+        /// bind元素集合
+        /// </summary>
         [XmlElement("bind")]
-        public XmlBindElement Bind { get; set; }
+        public List<XmlBindElement> BindElements { get; set; }
     }
     /// <summary>
-    /// 定义add元素
+    /// bind元素
     /// </summary>
-    internal sealed class XmlBindElement
+    public sealed class XmlBindElement
     {
-        [XmlElement("add")]
-        public List<XmlKeyValElement> Elements { get; set; }
-    }
-    /// <summary>
-    /// add元素属性
-    /// </summary>
-    internal sealed class XmlKeyValElement
-    {
+        /// <summary>
+        /// bind节点属性contract
+        /// </summary>
         [XmlAttribute("contract")]
         public string Contract { get; set; }
+        /// <summary>
+        /// bind节点属性realization
+        /// </summary>
         [XmlAttribute("realization")]
         public string Realization { get; set; }
     }

@@ -5,6 +5,9 @@ using System.Threading;
 
 namespace Sequencer
 {
+    /// <summary>
+    /// 定序器初始化类
+    /// </summary>
     public class SequencerInitialization
     {
         private readonly BindContext _bindContext;
@@ -15,7 +18,7 @@ namespace Sequencer
             _configuration = configuration;
         }
         /// <summary>
-        /// 调用此静态方法用以启动消息队列
+        /// 调用此方法用以启动消息队列
         /// </summary>
         /// <param name="e"></param>
         public void PeristalticStart()

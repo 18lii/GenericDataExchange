@@ -7,6 +7,10 @@ namespace AdvancedDependencyContainer.Dependency
     /// </summary>
     internal class DefualtDITypeAnalyticalProivder : IDITypeAnalyticalProvider
     {
+        /// <summary>
+        /// 创建类型分析类实例
+        /// </summary>
+        /// <returns></returns>
         public IDITypeAnalytical CreateDITypeAnalaytical()
         {
             return new DITypeAnalytical();

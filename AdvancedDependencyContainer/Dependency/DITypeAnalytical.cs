@@ -10,7 +10,12 @@ namespace AdvancedDependencyContainer.Dependency
     /// </summary>
     internal class DITypeAnalytical : IDITypeAnalytical
     {
-        
+        /// <summary>
+        /// 解析<see cref="{T}"/>类型
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public T GetValue<T>(object parameter)
         {
             object analytical(Type type)
@@ -48,6 +53,12 @@ namespace AdvancedDependencyContainer.Dependency
             };
             return analytical(typeof(T)).CastTo<T>();
         }
+        /// <summary>
+        /// 解析指定<see cref="Type"/>类型
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public object GetValue(Type type, object parameter)
         {
             try

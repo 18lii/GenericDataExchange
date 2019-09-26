@@ -19,52 +19,57 @@ namespace AdvancedDependencyContainer.Configurations
      * <dependencyConfiguration>
      *  <dependency>
      *    <assembly provider="程序集名称">
-     *      <bind>
-     *        <add contract="接口所在命名空间.契约接口名称" realization="实现类所在命名空间.实现类名称" />
+     *      <binds>
+     *        <bind contract="接口所在命名空间.契约接口名称" realization="实现类所在命名空间.实现类名称" />
      *        ...
-     *      </bind>
+     *      </binds>
      *    </assembly>
      *    ...
      *  </dependency>
      * </dependencyConfiguration>
+     * 
      *  ******Object Create by Shine Lee 2019-09-19******
      */
 
     /// <summary>
-    /// 定义Binds节Section
+    /// 定义Section
     /// </summary>
-    internal sealed class DependencyContainerAppConfiguration : ConfigurationSection
+    internal sealed class DependencyComponentAppConfiguration : ConfigurationSection
     {
         [ConfigurationProperty("dependency", IsDefaultCollection = true)]
-        [ConfigurationCollection(typeof(AssemblyCollection), AddItemName = "assembly")]
-        public AssemblyCollection Dependency
+        public AppAssemblyCollection Dependency
         {
             get
             {
-                return base["dependency"].CastTo<AssemblyCollection>();
+                return base["dependency"].CastTo<AppAssemblyCollection>();
             }
         }
     }
     /// <summary>
-    /// 定义binds元素集合
+    /// 定义component节点集合
     /// </summary>
-    internal sealed class AssemblyCollection : ConfigurationElementCollection
+    [ConfigurationCollection(typeof(AppCompositionCollection), AddItemName = "composition")]
+    internal sealed class AppAssemblyCollection : ConfigurationElementCollection
     {
         protected override ConfigurationElement CreateNewElement()
         {
-            return new AssemblyElementCollection();
+            return new AppCompositionCollection();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return element.CastTo<AssemblyElementCollection>().Provider;
+            return element.CastTo<AppCompositionCollection>().Provider;
         }
     }
     /// <summary>
-    /// 定义assembly元素集合
+    /// 定义component节点集合
     /// </summary>
-    internal sealed class AssemblyElementCollection : ConfigurationElement
+    internal sealed class AppCompositionCollection : ConfigurationElementCollection
     {
+        public AppCompositionCollection()
+        {
+            base.AddElementName = "component";
+        }
         /// <summary>
         /// 表示程序集名称
         /// </summary>
@@ -76,65 +81,61 @@ namespace AdvancedDependencyContainer.Configurations
                 return base["provider"].CastTo<string>();
             }
         }
-        [ConfigurationProperty("bind", IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof(BindElementCollection), AddItemName = "add")]
-        public BindElementCollection BindCollection
-        {
-            get
-            {
-                return base["bind"].CastTo<BindElementCollection>();
-            }
-        }
-    }
-    /// <summary>
-    /// 定义bind节
-    /// </summary>
-    internal sealed class BindElementCollection : ConfigurationElementCollection
-    {
         protected override ConfigurationElement CreateNewElement()
         {
-            return new AssemblyElement();
+            return new AppComponentElement();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return element.CastTo<AssemblyElement>().Contract;
+            return element.CastTo<AppComponentElement>();
         }
     }
 
+    internal sealed class AppComponentElement : ConfigurationElement
+    {
+        [ConfigurationProperty("contract", IsRequired = true)]
+        public AppComponentProperty Contract
+        {
+            get
+            {
+                return base["contract"].CastTo<AppComponentProperty>();
+            }
+        }
+        [ConfigurationProperty("realizer", IsRequired = true)]
+        public AppComponentProperty Realizer
+        {
+            get
+            {
+                return base["realizer"].CastTo<AppComponentProperty>();
+            }
+        }
+    }
     /// <summary>
     /// 定义key,val元素
     /// </summary>
-    internal sealed class AssemblyElement : ConfigurationElement
+    internal sealed class AppComponentProperty : ConfigurationElement
     {
         /// <summary>
         /// 表示接口所在命名空间
         /// </summary>
-        [ConfigurationProperty("contract", IsRequired = true, IsKey = false)]
-        public string Contract
+        [ConfigurationProperty("name", IsRequired = true, IsKey = false)]
+        public string Name
         {
             get
             {
-                return base["contract"].CastTo<string>();
-            }
-            set
-            {
-                base["contract"] = value;
+                return base["name"].CastTo<string>();
             }
         }
         /// <summary>
         /// 表示实现类所在命名空间
         /// </summary>
-        [ConfigurationProperty("realization", IsRequired = true, IsKey = true)]
-        public string Realization
+        [ConfigurationProperty("location", IsRequired = true, IsKey = true)]
+        public string Location
         {
             get
             {
-                return base["realization"].CastTo<string>();
-            }
-            set
-            {
-                base["realization"] = value;
+                return base["location"].CastTo<string>();
             }
         }
     }

@@ -13,12 +13,22 @@ namespace AdvancedDependencyContainer.Entities
      * 
      * ******Object Create By Shine Lee 2019-08-24******
      */
+
+    /// <summary>
+    /// 配置化数据库XML文档根节点
+    /// </summary>
     [XmlRoot("GenericXmlDocument")]
     public sealed class BonyRoot
     {
+        /// <summary>
+        /// class节点集合
+        /// </summary>
         [XmlElement("class")]
         public List<Bony> Records { get; set; }
     }
+    /// <summary>
+    /// class节点
+    /// </summary>
     public sealed class Bony
     {
         /// <summary>
@@ -46,6 +56,9 @@ namespace AdvancedDependencyContainer.Entities
     /// </summary>
     public sealed class BonyMarrow
     {
+        /// <summary>
+        /// 字段ID
+        /// </summary>
         [XmlAttribute("id")]
         public int Id { get; set; }
         /// <summary>

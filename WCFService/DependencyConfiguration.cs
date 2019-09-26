@@ -19,7 +19,7 @@ namespace WCFService
         public IDependencyBindContext BindDependency()
         {
             //使用app.config配置文件进行依赖组件绑定
-            DependencyBindContext.UseAppConfiguration("dependencyConfiguration");
+            DependencyBindContext.UseAppConfiguration("dependencyComponentConfiguration");
             //使用编码进行依赖组件绑定
             DependencyBindContext.IoCKernel
                 .Bind<IDbUnitOfWork>().To<UnitOfwork>()//绑定数据库工作单元

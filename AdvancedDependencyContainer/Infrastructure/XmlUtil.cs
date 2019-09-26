@@ -31,7 +31,7 @@ namespace AdvancedDependencyContainer.Infrastructure
                     return des.CastTo<T>();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return default;
             }

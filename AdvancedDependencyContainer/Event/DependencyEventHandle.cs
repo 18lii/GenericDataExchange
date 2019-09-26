@@ -3,40 +3,34 @@ using System;
 
 namespace AdvancedDependencyContainer.Event
 {
-    internal delegate T ResolveEventHandle<T>(object parameter = null);
+    /// <summary>
+    /// 依赖组件获取委托
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="parameter"></param>
+    /// <returns></returns>
     internal delegate object ResolveEventHandle(Type type, object parameter = null);
-    internal static class DependencyEventHandle<T>
+    /// <summary>
+    /// 依赖组件获取事件定义类
+    /// </summary>
+    internal static class DependencyEventHandle
     {
-        private static event ResolveEventHandle<T> ResolveEvent;
-        internal static void Register(ResolveEventHandle<T> method)
+        private static ResolveEventHandle _resolveDelegate;
+        internal static event ResolveEventHandle ResolveEvent
         {
-            if(ResolveEvent == null)
+            add
             {
-                ResolveEvent += method;
+                if(_resolveDelegate == null)
+                {
+                    _resolveDelegate += value;
+                }
             }
+            remove { }
         }
-        public static T OnResolveEvent(object parameter = null)
+        
+        public static object OnResolveEvent(this Type type, object parameter = null)
         {
-            return (T)ResolveEvent.Invoke(parameter);
-        }
-    }
-    internal class DependencyEventHandle
-    {
-        private static event ResolveEventHandle ResolveEvent;
-        internal static void Register(ResolveEventHandle method)
-        {
-            if (ResolveEvent == null)
-            {
-                ResolveEvent += method;
-            }
-        }
-        public static object OnResolveEvent(Type type, object parameter = null)
-        {
-            return ResolveEvent.Invoke(type, parameter);
-        }
-        public static T OnResolveEvent<T>(object parameter = null)
-        {
-            return ResolveEvent.Invoke(typeof(T), parameter).CastTo<T>();
+            return _resolveDelegate.Invoke(type, parameter);
         }
     }
 }

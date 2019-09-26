@@ -28,7 +28,7 @@ namespace WCFService
         {
             var name1 = "SqlClient";
             var name2 = "AdoClient";
-            Context.Bind<Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>>(name1, _commandContext.Activing);
+            Context.Bind<Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>>(name1, _commandContext.Activing, 5);
             Context.Bind<Tuple<AptOperate, string[], DataSet[]>, Tuple<bool, object>>(name2, _adapterContext.Activing);
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             config.AppSettings.Settings.Remove("QueueExecute1");

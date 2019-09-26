@@ -11,6 +11,9 @@ using System.Text;
 
 namespace AdvancedDependencyContainer.Dependency
 {
+    /// <summary>
+    /// 依赖绑定上下文类，内部类
+    /// </summary>
     internal class DependencyBindContext : IDependencyBindContext
     {
         public IIoCKernel IoCKernel { get; set; }
@@ -21,24 +24,26 @@ namespace AdvancedDependencyContainer.Dependency
         {
             try
             {
-                var section = ConfigurationManager.GetSection(sectionName).CastTo<DependencyContainerAppConfiguration>();
+                var section = ConfigurationManager.GetSection(sectionName).CastTo<DependencyComponentAppConfiguration>();
                 if (section != null && section.Dependency.Count > 0)
                 {
-                    foreach (AssemblyElementCollection collection in section.Dependency)
+                    foreach (AppCompositionCollection component in section.Dependency)
                     {
-                        foreach (AssemblyElement element in collection.BindCollection)
+                        foreach (AppComponentElement element in component)
                         {
-                            if (string.IsNullOrEmpty(collection.Provider))
+                            if (string.IsNullOrEmpty(component.Provider))
                             {
                                 continue;
                             }
                             else
                             {
-                                var assembly = Assembly.Load(collection.Provider);
-                                if (string.IsNullOrEmpty(element.Contract)
-                                    || string.IsNullOrEmpty(element.Realization)) continue;
-                                var key = string.Format("{0}.{1}", collection.Provider, element.Contract);
-                                var val = string.Format("{0}.{1}", collection.Provider, element.Realization);
+                                var assembly = Assembly.Load(component.Provider);
+                                if (string.IsNullOrEmpty(element.Contract.Name)
+                                    || string.IsNullOrEmpty(element.Contract.Location)
+                                    || string.IsNullOrEmpty(element.Realizer.Name)
+                                    || string.IsNullOrEmpty(element.Realizer.Location)) continue;
+                                var key = string.Format("{0}.{1}.{2}", component.Provider, element.Contract.Location, element.Contract.Name);
+                                var val = string.Format("{0}.{1}.{2}", component.Provider, element.Realizer.Location, element.Realizer.Name);
                                 IoCKernel.Bind(assembly.GetType(key)).To(assembly.GetType(val));
                             }
                         }
@@ -60,13 +65,13 @@ namespace AdvancedDependencyContainer.Dependency
             var path = System.AppDomain.CurrentDomain.BaseDirectory + "\\" + fileName;
             if (File.Exists(path))
             {
-                var config = XmlUtil.Deserialize<DependencyContainerXmlConfiguration>(path);
+                var config = XmlUtil.Deserialize<DependencyComponentXmlConfiguration>(path);
                 if(config != null)
                 {
                     foreach (var item in config.Dependency.Assemblies)
                     {
                         {
-                            foreach (var element in item.Bind.Elements)
+                            foreach (var element in item.Binds.BindElements)
                             {
                                 var key = string.Format("{0}.{1}", item.Provider, element.Contract);
                                 var val = string.Format("{0}.{1}", item.Provider, element.Realization);
@@ -86,25 +91,25 @@ namespace AdvancedDependencyContainer.Dependency
             }
             else//文件不存在时自动创建模板文件
             {
-                var xmlString = XmlUtil.Serializer(new DependencyContainerXmlConfiguration
+                var xmlString = XmlUtil.Serializer(new DependencyComponentXmlConfiguration
                 {
                     Dependency = new XmlAssemblyCollection
                     {
-                        Assemblies = new List<XmlBindCollection>
+                        Assemblies = new List<XmlAssemblyElement>
                         {
-                            new XmlBindCollection
+                            new XmlAssemblyElement
                             {
                                 Provider ="Write assembly name here...",
-                                Bind = new XmlBindElement
+                                Binds = new XmlBindCollection
                                 {
-                                    Elements = new List<XmlKeyValElement>
+                                    BindElements = new List<XmlBindElement>
                                     {
-                                        new XmlKeyValElement
+                                        new XmlBindElement
                                         {
                                             Contract = "Write interface location and name here...",
                                             Realization = "Write realization location and name here..."
                                         },
-                                        new XmlKeyValElement
+                                        new XmlBindElement
                                         {
                                             Contract = "Write interface location and name here...",
                                             Realization = "Write realization location and name here..."

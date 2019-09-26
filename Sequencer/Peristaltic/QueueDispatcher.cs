@@ -21,7 +21,7 @@ namespace Sequencer.Peristaltic
             Troop = troop;
             foreach (var a in actions)
             {
-                var executer = new Executer(1);
+                var executer = new Executer(executerDefault[a.Key]);
                 for (var i = 0; i < executerDefault[a.Key]; i++)
                 {
                     var signal = new WaitHandle[2] { new AutoResetEvent(false), new ManualResetEvent(false)};

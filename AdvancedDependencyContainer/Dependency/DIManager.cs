@@ -59,7 +59,11 @@ namespace AdvancedDependencyContainer.Dependency
             }
             return null;
         }
-
+        /// <summary>
+        /// 判断契约类型是否存在
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool ContainsKey(Type key)
         {
             if (key == null)
