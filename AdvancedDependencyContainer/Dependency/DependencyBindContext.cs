@@ -27,13 +27,13 @@ namespace AdvancedDependencyContainer.Dependency
                 var section = ConfigurationManager.GetSection(sectionName).CastTo<DependencyComponentAppConfiguration>();
                 if (section != null && section.Dependency.Count > 0)
                 {
-                    foreach (AppCompositionCollection component in section.Dependency)
+                    foreach (AppComponentCollection component in section.Dependency)
                     {
                         foreach (AppComponentElement element in component)
                         {
                             if (string.IsNullOrEmpty(component.Provider))
                             {
-                                continue;
+                                return;
                             }
                             else
                             {
@@ -50,10 +50,7 @@ namespace AdvancedDependencyContainer.Dependency
                     }
                 }
             }
-            catch(Exception e)
-            {
-                return;
-            }
+            catch { }
         }
         /// <summary>
         /// 应用xxxx.cfg文件作为依赖绑定依据
@@ -62,60 +59,60 @@ namespace AdvancedDependencyContainer.Dependency
         /// <param name="fileName"></param>
         public void UseXmlConfiguration(string fileName)
         {
-            var path = System.AppDomain.CurrentDomain.BaseDirectory + "\\" + fileName;
+            var path = string.Format("{0}\\{1}.cfg", AppDomain.CurrentDomain.BaseDirectory, fileName);
             if (File.Exists(path))
             {
-                var config = XmlUtil.Deserialize<DependencyComponentXmlConfiguration>(path);
-                if(config != null)
+                try
                 {
-                    foreach (var item in config.Dependency.Assemblies)
+                    var dependency = XmlUtil.Deserialize<DependencyComponentXmlConfiguration>(path).Dependency;
+                    if (dependency != null)
                     {
+                        foreach (var composition in dependency.Compositions)
                         {
-                            foreach (var element in item.Binds.BindElements)
+                            if (string.IsNullOrEmpty(composition.Provider)) return;
+                            foreach (var element in composition.Components)
                             {
-                                var key = string.Format("{0}.{1}", item.Provider, element.Contract);
-                                var val = string.Format("{0}.{1}", item.Provider, element.Realization);
-                                try
-                                {
-                                    var assembly = Assembly.Load(item.Provider);
-                                    IoCKernel.Bind(assembly.GetType(key)).To(assembly.GetType(val));
-                                }
-                                catch
-                                {
-                                    continue;
-                                }
+                                var assembly = Assembly.Load(composition.Provider);
+                                if (string.IsNullOrEmpty(element.Contract.Name)
+                                    || string.IsNullOrEmpty(element.Contract.Location)
+                                    || string.IsNullOrEmpty(element.Realizer.Name)
+                                    || string.IsNullOrEmpty(element.Realizer.Location)) return;
+                                var key = string.Format("{0}.{1}.{2}", composition.Provider, element.Contract.Location, element.Contract.Name);
+                                var val = string.Format("{0}.{1}.{2}", composition.Provider, element.Realizer.Location, element.Realizer.Name);
+                                
+                                IoCKernel.Bind(assembly.GetType(key)).To(assembly.GetType(val));
                             }
                         }
                     }
                 }
+                catch { }
             }
             else//文件不存在时自动创建模板文件
             {
                 var xmlString = XmlUtil.Serializer(new DependencyComponentXmlConfiguration
                 {
-                    Dependency = new XmlAssemblyCollection
+                    Dependency = new XmlCompositionCollection
                     {
-                        Assemblies = new List<XmlAssemblyElement>
+                        Compositions = new List<XmlComponentCollection>
                         {
-                            new XmlAssemblyElement
+                            new XmlComponentCollection
                             {
                                 Provider ="Write assembly name here...",
-                                Binds = new XmlBindCollection
+                                Components = new List<XmlComponentElement>
                                 {
-                                    BindElements = new List<XmlBindElement>
+                                    new XmlComponentElement
                                     {
-                                        new XmlBindElement
+                                        Contract = new XmlComponentProperty
                                         {
-                                            Contract = "Write interface location and name here...",
-                                            Realization = "Write realization location and name here..."
+                                            Name = "Write interface name here...",
+                                            Location = "Write interface location here..."
                                         },
-                                        new XmlBindElement
+                                        Realizer = new XmlComponentProperty
                                         {
-                                            Contract = "Write interface location and name here...",
-                                            Realization = "Write realization location and name here..."
+                                            Name = "Write realizer name here...",
+                                            Location = "Write realizer location here..."
                                         }
                                     }
-                                    
                                 }
                             }
                         }

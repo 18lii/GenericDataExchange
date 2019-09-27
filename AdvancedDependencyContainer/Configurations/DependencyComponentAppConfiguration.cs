@@ -14,17 +14,19 @@ namespace AdvancedDependencyContainer.Configurations
      * 
      * configSections中务必配置section元素
      * name：dependencyConfiguration
-     * type：AdvancedDependencyContainer.Configurations.DependencyContainerAppConfiguration, AdvancedDependencyContainer
+     * type：AdvancedDependencyContainer.Configurations.DependencyComponentAppConfiguration, AdvancedDependencyContainer
      * section节的结构为：
      * <dependencyConfiguration>
      *  <dependency>
-     *    <assembly provider="程序集名称">
-     *      <binds>
-     *        <bind contract="接口所在命名空间.契约接口名称" realization="实现类所在命名空间.实现类名称" />
-     *        ...
-     *      </binds>
-     *    </assembly>
-     *    ...
+     *    <composition provider="程序集名称">
+     *       <component>
+     *         <contract name="接口名称" location="接口所在命名空间" />
+     *         <realizer name="实现名称" location="实现所在命名空间" />
+     *       </component>
+     *       ...
+     *     </composition>
+     *     ...
+     *   </dependency>
      *  </dependency>
      * </dependencyConfiguration>
      * 
@@ -32,48 +34,53 @@ namespace AdvancedDependencyContainer.Configurations
      */
 
     /// <summary>
-    /// 定义Section
+    /// 定义dependency节点
     /// </summary>
     internal sealed class DependencyComponentAppConfiguration : ConfigurationSection
     {
         [ConfigurationProperty("dependency", IsDefaultCollection = true)]
-        public AppAssemblyCollection Dependency
+        public AppCompositionCollection Dependency
         {
             get
             {
-                return base["dependency"].CastTo<AppAssemblyCollection>();
+                return base["dependency"].CastTo<AppCompositionCollection>();
             }
         }
     }
+
     /// <summary>
-    /// 定义component节点集合
+    /// 定义composition节点集合
     /// </summary>
-    [ConfigurationCollection(typeof(AppCompositionCollection), AddItemName = "composition")]
-    internal sealed class AppAssemblyCollection : ConfigurationElementCollection
+    //[ConfigurationCollection(typeof(AppComponentCollection), AddItemName = "composition")]
+    internal sealed class AppCompositionCollection : ConfigurationElementCollection
     {
+        public AppCompositionCollection()
+        {
+            base.AddElementName = "composition";
+        }
         protected override ConfigurationElement CreateNewElement()
         {
-            return new AppCompositionCollection();
+            return new AppComponentCollection();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return element.CastTo<AppCompositionCollection>().Provider;
+            return element.CastTo<AppComponentCollection>().Provider;
         }
     }
     /// <summary>
     /// 定义component节点集合
     /// </summary>
-    internal sealed class AppCompositionCollection : ConfigurationElementCollection
+    internal sealed class AppComponentCollection : ConfigurationElementCollection
     {
-        public AppCompositionCollection()
+        public AppComponentCollection()
         {
             base.AddElementName = "component";
         }
         /// <summary>
         /// 表示程序集名称
         /// </summary>
-        [ConfigurationProperty("provider", IsRequired = true)]
+        [ConfigurationProperty("provider", IsRequired = false)]
         public string Provider
         {
             get
@@ -81,6 +88,7 @@ namespace AdvancedDependencyContainer.Configurations
                 return base["provider"].CastTo<string>();
             }
         }
+        
         protected override ConfigurationElement CreateNewElement()
         {
             return new AppComponentElement();
@@ -91,7 +99,9 @@ namespace AdvancedDependencyContainer.Configurations
             return element.CastTo<AppComponentElement>();
         }
     }
-
+    /// <summary>
+    /// 定义component节点元素
+    /// </summary>
     internal sealed class AppComponentElement : ConfigurationElement
     {
         [ConfigurationProperty("contract", IsRequired = true)]
@@ -112,7 +122,7 @@ namespace AdvancedDependencyContainer.Configurations
         }
     }
     /// <summary>
-    /// 定义key,val元素
+    /// 定义component节点元素属性
     /// </summary>
     internal sealed class AppComponentProperty : ConfigurationElement
     {

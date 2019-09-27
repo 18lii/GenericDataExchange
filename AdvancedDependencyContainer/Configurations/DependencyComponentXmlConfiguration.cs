@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using AdvancedDependencyContainer.Helper;
+using AdvancedDependencyContainer.Infrastructure;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace AdvancedDependencyContainer.Configurations
@@ -8,14 +12,15 @@ namespace AdvancedDependencyContainer.Configurations
      * 配置文件应按此结构进行组织
      *xxxx.cfg文件需配置以下项
      * 
-     * <dependencyContainerConfiguration>
+     * <dependencyComponentConfiguration>
      *   <dependency>
-     *     <assembly provider="程序集名称">
-     *       <bind>
-     *         <add contract="接口所在命名空间.接口名称" realization="实现类所在命名空间.类名称" />
-     *         ...
-     *       <bind>
-     *     </assembly>
+     *     <composition provider="程序集名称">
+     *       <component>
+     *         <contract name="接口名称" location="接口所在命名空间" />
+     *         <realizer name="实现名称" location="实现所在命名空间" />
+     *       </component>
+     *       ...
+     *     </composition>
      *     ...
      *   </dependency>
      * </dependencyContainerConfiguration>
@@ -34,60 +39,54 @@ namespace AdvancedDependencyContainer.Configurations
         /// dependency节点
         /// </summary>
         [XmlElement("dependency")]
-        public XmlAssemblyCollection Dependency { get; set; }
+        public XmlCompositionCollection Dependency { get; set; }
     }
     /// <summary>
-    /// 定义assembly节点
+    /// 定义composition节点集合
     /// </summary>
-    public sealed class XmlAssemblyCollection
+    public sealed class XmlCompositionCollection
     {
         /// <summary>
-        /// assembly节点集合
+        /// component节点集合
         /// </summary>
-        [XmlElement("assembly")]
-        public List<XmlAssemblyElement> Assemblies { get; set; }
+        [XmlElement("composition")]
+        public List<XmlComponentCollection> Compositions { get; set; }
     }
-    /// <summary>
-    /// 定义binds节点
-    /// </summary>
-    public sealed class XmlAssemblyElement
+    public sealed class XmlComponentCollection
     {
         /// <summary>
         /// assembly节点属性provider
         /// </summary>
         [XmlAttribute("provider")]
         public string Provider { get; set; }
-        /// <summary>
-        /// binds节点
-        /// </summary>
-        [XmlElement("binds")]
-        public XmlBindCollection Binds { get; set; }
+        [XmlElement("component")]
+        public List<XmlComponentElement> Components { get; set; }
     }
+    
     /// <summary>
-    /// 定义bind节点
+    /// 定义component节点元素
     /// </summary>
-    public sealed class XmlBindCollection
+    public sealed class XmlComponentElement
     {
         /// <summary>
-        /// bind元素集合
+        /// contract节点
         /// </summary>
-        [XmlElement("bind")]
-        public List<XmlBindElement> BindElements { get; set; }
+        [XmlElement("contract", IsNullable = false)]
+        public XmlComponentProperty Contract { get; set; }
+        /// <summary>
+        /// realizer节点
+        /// </summary>
+        [XmlElement("realizer", IsNullable = false)]
+        public XmlComponentProperty Realizer { get; set; }
     }
     /// <summary>
-    /// bind元素
+    /// 定义component节点元素属性
     /// </summary>
-    public sealed class XmlBindElement
+    public sealed class XmlComponentProperty
     {
-        /// <summary>
-        /// bind节点属性contract
-        /// </summary>
-        [XmlAttribute("contract")]
-        public string Contract { get; set; }
-        /// <summary>
-        /// bind节点属性realization
-        /// </summary>
-        [XmlAttribute("realization")]
-        public string Realization { get; set; }
+        [XmlAttribute("name")]
+        public string Name { get; set; }
+        [XmlAttribute("location")]
+        public string Location { get; set; }
     }
 }

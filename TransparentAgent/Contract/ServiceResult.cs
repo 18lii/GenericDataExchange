@@ -10,26 +10,21 @@ namespace TransparentAgent.Contract
         public ServiceResult(bool resultType)
         {
             ResultType = resultType;
+            Message = resultType ? "操作成功" : "操作失败";
         }
-        public ServiceResult(bool resultType, string message, string logMessage)
+        public ServiceResult(bool resultType, object resultData)
             : this(resultType)
         {
-            Message = message;
-            LogMessage = logMessage;
+            if (resultType)
+            {
+                AppendData = resultData;
+            }
+            else
+            {
+                LogMessage = (string)resultData;
+            }
         }
-        public ServiceResult(bool resultType, string message, object appendData)
-            : this(resultType)
-        {
-            Message = message;
-            AppendData = appendData;
-        }
-        public ServiceResult(bool resultType, string message, string logMessage, object appendData)
-            : this(resultType)
-        {
-            Message = message;
-            LogMessage = logMessage;
-            AppendData = appendData;
-        }
+        
 
         public bool ResultType { get; set; }
         public string Message { get; set; }

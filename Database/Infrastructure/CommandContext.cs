@@ -25,7 +25,7 @@ namespace Database.Infrastructure
             SetConnection(out var id);
             if (parameters != null)
             {
-                Parallel.ForEach(parameters, kv =>
+                Parallel.ForEach(parameters, (kv, state) =>
                 {
                     var dyParam = new DynamicParameters();
                     if (kv.Value != null)
@@ -35,10 +35,15 @@ namespace Database.Infrastructure
                             dyParam.Add(item.Key.ToString(), item.Value);
                         }
                         result = Accept(id, operate, kv.Key, dyParam);
+                        
                     }
                     else
                     {
                         result = Accept(id, operate, kv.Key, dyParam);
+                    }
+                    if (!result.Item1)
+                    {
+                        state.Stop();
                     }
                 });
                 if (result.Item1)

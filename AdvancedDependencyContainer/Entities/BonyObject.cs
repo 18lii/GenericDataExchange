@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace AdvancedDependencyContainer.Entities
 {
     /*
-     * 此文件中的类为配置化数据库使用的序列化与反序列话类，暂不使用，仅做研究对象
+     * 此文件中的类为配置化数据库使用的序列化与反序列化类，暂不使用，仅做研究对象
      * 
      * ******Object Create By Shine Lee 2019-08-24******
      */

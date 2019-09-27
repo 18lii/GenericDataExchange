@@ -20,21 +20,25 @@ namespace Database.Infrastructure
             {
                 for (var i = 0; i < sqlTexts.Length; i++)
                 {
-                    var command = new SqlCommand(sqlTexts[i], Connection[id], Transaction[id]);
-                    command.CommandTimeout = 60;
-                    switch (operate)
+                    using (var command = new SqlCommand(sqlTexts[i], Connection[id], Transaction[id])
                     {
-                        case AptOperate.Get:
-                            result = Accept(operate, command);
-                            break;
-                        case AptOperate.Set:
-                            if(dataSets.Length > 0)
-                            {
-                                result = Accept(operate, command, dataSets[i]);
-                            }
-                            break;
+                        CommandTimeout = 60
+                    })
+                    {
+                        switch (operate)
+                        {
+                            case AptOperate.Get:
+                                result = Accept(operate, command);
+                                break;
+                            case AptOperate.Set:
+                                if (dataSets.Length > 0)
+                                {
+                                    result = Accept(operate, command, dataSets[i]);
+                                }
+                                break;
+                        }
+                        if (!result.Item1) break;
                     }
-                    command.Dispose();
                 }
                 var commitResult = DbCommit(id);
                 if (!commitResult.Item1)
