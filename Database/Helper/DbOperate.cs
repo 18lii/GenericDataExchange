@@ -13,25 +13,25 @@ namespace Database.Helper
     public enum CmdOperate
     {
         [Description("查询")]
-        Select,
+        Select = 101,
         [Description("插入")]
-        Insert,
+        Insert = 102,
         [Description("更新")]
-        Update,
+        Update = 103,
         [Description("删除")]
-        Delete,
+        Delete = 104,
         [Description("单值查询")]
-        ExecuteScalar,
+        ExecuteScalar = 201,
         [Description("集合查询")]
-        ExecuteReader,
+        ExecuteReader = 202,
         [Description("操作")]
-        ExecuteNoQuery,
+        ExecuteNoQuery = 203,
         [Description("存储过程调用")]
-        ExecuteProcedure,
+        ExecuteProcedure = 204,
         [Description("事务提交")]
-        Commit,
+        Commit = 0,
         [Description("事务回滚")]
-        Rollback
+        Rollback = -1
     }
     /// <summary>
     /// 数据适配器操作类型枚举
@@ -39,8 +39,8 @@ namespace Database.Helper
     public enum AptOperate
     {
         [Description("查询")]
-        Get,
+        Get = 301,
         [Description("更改")]
-        Set
+        Set = 302
     }
 }

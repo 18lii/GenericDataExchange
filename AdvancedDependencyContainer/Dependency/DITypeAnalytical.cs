@@ -16,7 +16,7 @@ namespace AdvancedDependencyContainer.Dependency
         /// <typeparam name="T"></typeparam>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public T GetValue<T>(object parameter)
+        public T GetValue<T>()
         {
             object analytical(Type type)
             {
@@ -37,9 +37,12 @@ namespace AdvancedDependencyContainer.Dependency
                                 args.Add(analytical(IoCContext.Context.DIManager.GetTypeInfo(para.ParameterType)));
                             }
                         }
-                        if(args.Count < parameters.Length)
+                        if (IoCContext.Context.DIManager.ContainsKey(type))
                         {
-                            args.Add(parameter);
+                            foreach (var arg in IoCContext.Context.DIManager.GetArgsInfo(type))
+                            {
+                                args.Add(arg);
+                            }
                         }
                         instance = Activator.CreateInstance(type, args.ToArray());
                         break;
@@ -59,13 +62,13 @@ namespace AdvancedDependencyContainer.Dependency
         /// <param name="type"></param>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        public object GetValue(Type type, object parameter)
+        public object GetValue(Type type)
         {
             try
             {
-                object analytical(Type parameterType)
+                object analytical(Type argType)
                 {
-                    var constructorInfos = parameterType.GetConstructors();
+                    var constructorInfos = argType.GetConstructors();
                     object instance = null;
                     foreach (var conInfo in constructorInfos)
                     {
@@ -82,16 +85,19 @@ namespace AdvancedDependencyContainer.Dependency
                                     args.Add(analytical(IoCContext.Context.DIManager.GetTypeInfo(para.ParameterType)));
                                 }
                             }
-                            if (args.Count < parameters.Length)
+                            if (IoCContext.Context.DIManager.ContainsKey(argType))
                             {
-                                args.Add(parameter);
+                                foreach (var arg in IoCContext.Context.DIManager.GetArgsInfo(argType))
+                                {
+                                    args.Add(arg);
+                                }
                             }
-                            instance = Activator.CreateInstance(parameterType, args.ToArray());
+                            instance = Activator.CreateInstance(argType, args.ToArray());
                             break;
                         }
                         else
                         {
-                            return Activator.CreateInstance(parameterType);
+                            return Activator.CreateInstance(argType);
                         }
                     }
                     return instance;

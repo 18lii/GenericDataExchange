@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sequencer.Events;
+using System;
 
 namespace Sequencer.Interface
 {

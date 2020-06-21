@@ -1,64 +1,57 @@
-﻿using Database.Helper;
-using Database.Interface;
-using Sequencer.Events;
+﻿using Sequencer.Interface;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Configuration;
 using System.Data;
+using TransparentAgent.Contract;
+using TransparentAgent.Interface;
+using WCFService.Events;
 using WCFService.Helper;
+using WCFService.Infrastructure;
 using WCFService.Interface;
 
 namespace WCFService.DbUnitOfWork
 {
-    public class UnitOfwork : IDbUnitOfWork
+    internal class UnitOfwork : IDbUnitOfWork
     {
-        public UnitOfwork(ICommandContext commandContext, IAdapterContext adapterContext)
+        public UnitOfwork(ISequencerEntry sequencerEntry)
         {
-            _commandContext = commandContext;
-            _adapterContext = adapterContext;
+            SequencerEntry = sequencerEntry;
+            _sqlEvent = new ServiceEventHandle<Tuple<int, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>>();
+            _adoEvent = new ServiceEventHandle<Tuple<int, string[], DataSet[]>, Tuple<bool, object>>();
         }
-        /// <summary>
-        /// 数据库插入/修改事件，成功则触发
-        /// </summary>
-        //public event Action<IGenericResult> DatabaseModifyEvent;
+
+        #region 定序器使用的变量
         private readonly string _sqlClientName = ConfigurationManager.AppSettings["QueueExecute1"];
         private readonly string _adoClientName = ConfigurationManager.AppSettings["QueueExecute2"];
-        private readonly ICommandContext _commandContext;
-        private readonly IAdapterContext _adapterContext;
-        //private void OnDatabaseModify(IGenericResult result)
-        //{
-        //    DatabaseModifyEvent?.Invoke(result);
-        //}
-        public object Result(Guid id)
+        private readonly IServiceEventHandle<Tuple<int, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>> _sqlEvent;
+        private readonly IServiceEventHandle<Tuple<int, string[], DataSet[]>, Tuple<bool, object>> _adoEvent;
+        public ISequencerEntry SequencerEntry { get; set; }
+        public event Action<object> ResultEvent
         {
-            return GenericEventHandle.OnResultEvent(id);
+            add
+            {
+                SequencerEntry.ResultCallbackEvent +=  obj => 
+                {
+                    var result = (Tuple<bool, object>)obj;
+                    value.Invoke(new ServiceResult(result.Item1, result.Item2).Compression());
+                };
+            }
+            remove { }
         }
-        /// <summary>
-        /// 数据库操作返回，以GUID进行获取，需等待
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public void ResultAsync(Guid id, AsyncCallback callback)
-        {
-            GenericEventHandle.OnResultEventAsync(id, callback);
-        }
+        #endregion
         /// <summary>
         /// 数据库记录获取
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="param"></param>
-        public Tuple<bool, object> Select(string sqlText, Hashtable param)
+        public byte[] Select(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Select, sqlText.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(101, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
         }
-        public Guid SequentialSelect(string sqlText, Hashtable param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Select, sqlText.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         /// <summary>
         /// 向数据库插入记录
         /// </summary>
@@ -66,17 +59,12 @@ namespace WCFService.DbUnitOfWork
         /// <param name="param"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public Tuple<bool, object> Insert(string[] sqls, Hashtable[] param)
+        public byte[] Insert(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Insert, sqls.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(102, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression().Compression();
         }
-        public Guid SequentialInsert(string[] sqls, Hashtable[] param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Insert, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         /// <summary>
         /// 向数据库更新记录， 参数param列表中必须包含where参数，否则更新失败；
         /// </summary>
@@ -85,17 +73,12 @@ namespace WCFService.DbUnitOfWork
         /// <param name="param"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public Tuple<bool, object> Update(string[] sqls, Hashtable[] param)
+        public byte[] Update(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Update, sqls.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(103, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
         }
-        public Guid SequentialUpdate(string[] sqls, Hashtable[] param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Update, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         /// <summary>
         /// 删除数据库中的记录，参数param列表中必须包含where参数，否则操作失败；
         /// </summary>
@@ -103,17 +86,12 @@ namespace WCFService.DbUnitOfWork
         /// <param name="name"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public Tuple<bool, object> Delete(string[] sqls, Hashtable[] param)
+        public byte[] Delete(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Delete, sqls.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(104, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
         }
-        public Guid SequentialDelete(string[] sqls, Hashtable[] param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.Delete, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         /// <summary>
         /// 数据库查询，返回值为查询结果第一行第一列的值
         /// </summary>
@@ -121,18 +99,12 @@ namespace WCFService.DbUnitOfWork
         /// <param name="name"></param>
         /// <param name="sqlText"></param>
         /// <returns></returns>
-        public Tuple<bool, object> ExecuteScalar(string sqlText, Hashtable param)
+        public byte[] ExecuteScalar(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteScalar, sqlText.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(201, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
         }
-        public Guid SequentialExecuteScalar(string sqlText, Hashtable param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteScalar, sqlText.ToContextParam(param));
-
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         /// <summary>
         /// 数据库查询，返回值为结果集，类型为<see cref="Hashtable"/>[]
         /// </summary>
@@ -140,17 +112,12 @@ namespace WCFService.DbUnitOfWork
         /// <param name="name"></param>
         /// <param name="sqlText"></param>
         /// <returns></returns>
-        public Tuple<bool, object> ExecuteReader(string sqlText, Hashtable param)
+        public byte[] ExecuteReader(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteReader, sqlText.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(202, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
         }
-        public Guid SequentialExecuteReader(string sqlText, Hashtable param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteReader, sqlText.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         /// <summary>
         /// 数据库操作，返回值为受影响的记录数
         /// </summary>
@@ -158,43 +125,162 @@ namespace WCFService.DbUnitOfWork
         /// <param name="name"></param>
         /// <param name="sqlText"></param>
         /// <returns></returns>
-        public Tuple<bool, object> ExecuteNoQuery(string[] sqls, Hashtable[] param)
+        public byte[] ExecuteNoQuery(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteNoQuery, sqls.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(203, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
         }
-        public Guid SequentialExecuteNoQuery(string[] sqls, Hashtable[] param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteNoQuery, sqls.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         ///// <summary>
         ///// 数据库存储过程调用
         ///// </summary>
         ///// <param name="userId"></param>
         ///// <param name="procedureName"></param>
         ///// <returns></returns>
-        public Tuple<bool, object> ExecuteProcedure(string procedureName, Hashtable param)
+        public byte[] ExecuteProcedure(byte[] data)
         {
-            return _commandContext.Activing(new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteProcedure, procedureName.ToContextParam(param)));
+            var result = _sqlEvent.OnActiveEvent(data.ToContextParam(204, out var sequence));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
         }
-        public Guid SequentialExecuteProcedure(string procedureName, Hashtable param, bool sequence)
-        {
-            var id = Guid.NewGuid();
-            var context = new Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>(CmdOperate.ExecuteProcedure, procedureName.ToContextParam(param));
-            GenericEventHandle.OnGenericEvent(_sqlClientName, id, context, sequence);
-            return id;
-        }
+        
         /// <summary>
         /// 数据适配器查询
         /// </summary>
         /// <param name="sqlText"></param>
         /// <param name="dataSet"></param>
         /// <returns></returns>
-        public Tuple<bool, object> Get(string sqlText)
+        public byte[] Get(byte[] data)
         {
-            return _adapterContext.Activing(new Tuple<AptOperate, string[], DataSet[]>(AptOperate.Set, new string[1] { sqlText }, null));
+            var param = data.Decompress<IContractData>();
+            var result = _adoEvent.OnActiveEvent(new Tuple<int, string[], DataSet[]>(301, param.SqlText, null));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
+        }
+        
+        /// <summary>
+        /// 数据适配器更改（插入，更新，删除）
+        /// </summary>
+        /// <param name="sqlText"></param>
+        /// <param name="dataSet"></param>
+        /// <returns></returns>
+        public byte[] Set(byte[] data)
+        {
+            var param = data.Decompress<IContractData>();
+            var result = _adoEvent.OnActiveEvent(new Tuple<int, string[], DataSet[]>(302, param.SqlText, param.DataSet));
+            return new ServiceResult(result.Item1, result.Item2).Compression();
+        }
+
+        //public byte[] SequentialSelect(byte[] data)
+        //{
+        //    var context = data.ToContextParam(101, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        //public byte[] SequentialInsert(byte[] data)
+        //{
+        //    var context = data.ToContextParam(102, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        //public byte[] SequentialUpdate(byte[] data)
+        //{
+        //    var context = data.ToContextParam(103, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        //public byte[] SequentialDelete(byte[] data)
+        //{
+        //    var context = data.ToContextParam(104, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        //public byte[] SequentialExecuteScalar(byte[] data)
+        //{
+        //    var context = data.ToContextParam(201, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        //public byte[] SequentialExecuteReader(byte[] data)
+        //{
+        //    var context = data.ToContextParam(202, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        //public byte[] SequentialExecuteNoQuery(byte[] data)
+        //{
+        //    var context = data.ToContextParam(203, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        //public byte[] SequentialExecuteProcedure(byte[] data)
+        //{
+        //    var context = data.ToContextParam(204, out var sequence);
+        //    var result = SequencerEntry.Access(_sqlClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="sqlText"></param>
+        ///// <param name="sequence"></param>
+        ///// <returns></returns>
+        //public byte[] SequentialGet(byte[] data)
+        //{
+        //    var context = data.ToContextParam(301, out var sequence);
+        //    var result = SequencerEntry.Access(_adoClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        ///// <summary>
+        ///// 数据适配器更改（插入，更新，删除）
+        ///// </summary>
+        ///// <param name="sqlText"></param>
+        ///// <param name="dataSet"></param>
+        ///// <param name="sequence"></param>
+        ///// <returns></returns>
+        //public byte[] SequentialSet(byte[] data)
+        //{
+        //    var context = data.ToContextParam(301, out var sequence);
+        //    var result = SequencerEntry.Access(_adoClientName, context, sequence) as Tuple<bool, object>;
+        //    return new ServiceResult(result.Item1, result.Item2).Compression();
+        //}
+        public void SequentialSelectAsync(byte[] data)
+        {
+            var context = data.ToContextParam(101, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
+        }
+        public void SequentialInsertAsync(byte[] data)
+        {
+            var context = data.ToContextParam(102, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
+        }
+        public void SequentialUpdateAsync(byte[] data)
+        {
+            var context = data.ToContextParam(103, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
+        }
+        public void SequentialDeleteAsync(byte[] data)
+        {
+            var context = data.ToContextParam(104, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
+        }
+        public void SequentialExecuteScalarAsync(byte[] data)
+        {
+            var context = data.ToContextParam(201, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
+        }
+        public void SequentialExecuteReaderAsync(byte[] data)
+        {
+            var context = data.ToContextParam(202, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
+        }
+        public void SequentialExecuteNoQueryAsync(byte[] data)
+        {
+            var context = data.ToContextParam(203, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
+        }
+        public void SequentialExecuteProcedureAsync(byte[] data)
+        {
+            var context = data.ToContextParam(204, out var sequence);
+            SequencerEntry.AccessAsync(_sqlClientName, context, sequence);
         }
         /// <summary>
         /// 
@@ -202,22 +288,11 @@ namespace WCFService.DbUnitOfWork
         /// <param name="sqlText"></param>
         /// <param name="sequence"></param>
         /// <returns></returns>
-        public Guid SequentialGet(string sqlText, bool sequence)
+        public void SequentialGetAsync(byte[] data)
         {
-            var id = Guid.NewGuid();
-            var context = new Tuple<AptOperate, string[], DataSet[]>(AptOperate.Set, new string[1] { sqlText }, null);
-            GenericEventHandle.OnGenericEvent(_adoClientName, id, context, sequence);
-            return id;
-        }
-        /// <summary>
-        /// 数据适配器更改（插入，更新，删除）
-        /// </summary>
-        /// <param name="sqlText"></param>
-        /// <param name="dataSet"></param>
-        /// <returns></returns>
-        public Tuple<bool, object> Set(string[] sqlText, DataSet[] dataSet)
-        {
-            return _adapterContext.Activing(new Tuple<AptOperate, string[], DataSet[]>(AptOperate.Set, sqlText, dataSet));
+            var param = data.Decompress<IContractData>();
+            var context = new Tuple<int, string[], DataSet[]>(301, param.SqlText, null);
+            SequencerEntry.AccessAsync(_adoClientName, context, param.Sequence);
         }
         /// <summary>
         /// 数据适配器更改（插入，更新，删除）
@@ -226,12 +301,11 @@ namespace WCFService.DbUnitOfWork
         /// <param name="dataSet"></param>
         /// <param name="sequence"></param>
         /// <returns></returns>
-        public Guid SequentialSet(string[] sqlText, DataSet[] dataSet, bool sequence)
+        public void SequentialSetAsync(byte[] data)
         {
-            var id = Guid.NewGuid();
-            var context = new Tuple<AptOperate, string[], DataSet[]>(AptOperate.Set, sqlText, dataSet);
-            GenericEventHandle.OnGenericEvent(_adoClientName, id, context, sequence);
-            return id;
+            var param = data.Decompress<IContractData>();
+            var context = new Tuple<int, string[], DataSet[]>(302, param.SqlText, param.DataSet);
+            SequencerEntry.AccessAsync(_adoClientName, context, param.Sequence);
         }
     }
 }

@@ -24,7 +24,11 @@ namespace Sequencer.Peristaltic
                 var executer = new Executer(executerDefault[a.Key]);
                 for (var i = 0; i < executerDefault[a.Key]; i++)
                 {
-                    var signal = new WaitHandle[2] { new AutoResetEvent(false), new ManualResetEvent(false)};
+                    var signal = new WaitHandle[2] 
+                    {
+                        new AutoResetEvent(false),
+                        new ManualResetEvent(false)
+                    };
                     new Thread(obj => { a.Value(signal, executer.Squadron); })
                     {
                         Name = "GSP-EXECUTE:" + a.Key + "#default" + "#" + i
@@ -47,12 +51,21 @@ namespace Sequencer.Peristaltic
                 if (Troop.TryDequeue(out var tv))
                 {
                     var name = tv.Name;
-                    Executers.TryGetValue(name, out var ev);
-                    ev.Squadron.Enqueue(tv);
-                    Parallel.For(0, ev.Count, i =>
+                    if(Executers.TryGetValue(name, out var ev))
                     {
-                        ((ManualResetEvent)ev.Signals[i, 1]).Set();
-                    });
+                        ev.Squadron.Enqueue(tv);
+                        if (ev.Sequential)
+                        {
+                            ((ManualResetEvent)ev.Signals[0, 1]).Set();
+                        }
+                        else
+                        {
+                            Parallel.For(0, ev.Count, i =>
+                            {
+                                ((ManualResetEvent)ev.Signals[i, 1]).Set();
+                            });
+                        }
+                    }
                 }
                 else
                 {

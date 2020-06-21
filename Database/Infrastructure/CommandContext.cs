@@ -17,7 +17,7 @@ namespace Database.Infrastructure
         /// <param name="name"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        public Tuple<bool, object> Activing(Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>> context)
+        public Tuple<bool, object> Activing(Tuple<int, ConcurrentDictionary<string, Hashtable>> context)
         {
             var operate = context.Item1;
             var parameters = context.Item2;
@@ -34,12 +34,12 @@ namespace Database.Infrastructure
                         {
                             dyParam.Add(item.Key.ToString(), item.Value);
                         }
-                        result = Accept(id, operate, kv.Key, dyParam);
+                        result = Accept(id, (CmdOperate)operate, kv.Key, dyParam);
                         
                     }
                     else
                     {
-                        result = Accept(id, operate, kv.Key, dyParam);
+                        result = Accept(id, (CmdOperate)operate, kv.Key, dyParam);
                     }
                     if (!result.Item1)
                     {

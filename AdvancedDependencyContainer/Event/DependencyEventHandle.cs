@@ -9,7 +9,7 @@ namespace AdvancedDependencyContainer.Event
     /// <param name="type"></param>
     /// <param name="parameter"></param>
     /// <returns></returns>
-    internal delegate object ResolveEventHandle(Type type, object parameter = null);
+    internal delegate object ResolveEventHandle(Type type);
     /// <summary>
     /// 依赖组件获取事件定义类
     /// </summary>
@@ -28,9 +28,9 @@ namespace AdvancedDependencyContainer.Event
             remove { }
         }
         
-        public static object OnResolveEvent(this Type type, object parameter = null)
+        public static object OnResolveEvent(this Type type)
         {
-            return _resolveDelegate.Invoke(type, parameter);
+            return _resolveDelegate.Invoke(type);
         }
     }
 }

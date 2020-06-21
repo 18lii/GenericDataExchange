@@ -67,6 +67,7 @@
     <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Infrastructure\CompressionExtensions.cs" />
     <Compile Include="Infrastructure\DESCryptExtensions.cs" />
+    <Compile Include="Infrastructure\FileUtil.cs" />
     <Compile Include="Infrastructure\XmlUtil.cs" />
     <Compile Include="Interface\IDependencyConfiguration.cs" />
     <Compile Include="Interface\IDependencyBindContext.cs" />

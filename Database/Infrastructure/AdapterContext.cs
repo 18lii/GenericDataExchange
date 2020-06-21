@@ -9,9 +9,9 @@ namespace Database.Infrastructure
     internal class AdapterContext : BaseContext, IAdapterContext
     {
         public AdapterContext(ISqlAdapterAccessor dbUtil) : base(dbUtil) { }
-        public Tuple<bool, object> Activing(Tuple<AptOperate, string[], DataSet[]> context)
+        public Tuple<bool, object> Activing(Tuple<int, string[], DataSet[]> context)
         {
-            var operate = context.Item1;
+            var operate = (AptOperate)context.Item1;
             var sqlTexts = context.Item2;
             var dataSets = context.Item3;
             var result = default(Tuple<bool, object>);
@@ -25,6 +25,7 @@ namespace Database.Infrastructure
                         CommandTimeout = 60
                     })
                     {
+
                         switch (operate)
                         {
                             case AptOperate.Get:

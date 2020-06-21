@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,10 +30,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,14 +50,17 @@
     <Compile Include="Entities\QueueModel.cs" />
     <Compile Include="Entities\QueueSignal.cs" />
     <Compile Include="Entities\ResultType.cs" />
-    <Compile Include="EventContext\ActionEventWorker.cs" />
-    <Compile Include="EventContext\FunctionEventWorker.cs" />
-    <Compile Include="Events\GenericEventHandle.cs" />
+    <Compile Include="EventContext\AxEventContext.cs" />
+    <Compile Include="EventContext\FxEventContext.cs" />
+    <Compile Include="Events\PeristalticEventProvider.cs" />
+    <Compile Include="Events\SequenceEventProvider.cs" />
     <Compile Include="Interface\IEntryContext.cs" />
+    <Compile Include="Interface\ISequencerEntry.cs" />
     <Compile Include="Interface\ITimespan.cs" />
     <Compile Include="Interface\IPeristalticConfiguration.cs" />
-    <Compile Include="Interface\IGenericEventHandle.cs" />
-    <Compile Include="Interface\IPeristalticEventArg.cs" />
+    <Compile Include="Interface\IPeristalticEventProvider.cs" />
+    <Compile Include="Peristaltic\QueueResulter.cs" />
+    <Compile Include="SequencerEntry.cs" />
     <Compile Include="SequencerInitialization.cs" />
     <Compile Include="Interface\IBindContext.cs" />
     <Compile Include="Interface\IQueueModel.cs" />

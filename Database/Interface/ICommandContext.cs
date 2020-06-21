@@ -10,6 +10,6 @@ namespace Database.Interface
     /// </summary>
     public interface ICommandContext : IBaseContext
     {
-        Tuple<bool, object> Activing(Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>> context);
+        Tuple<bool, object> Activing(Tuple<int, ConcurrentDictionary<string, Hashtable>> context);
     }
 }

@@ -25,12 +25,12 @@ namespace AdvancedDependencyContainer.Interface
         /// </summary>
         /// <typeparam name="U"></typeparam>
         /// <returns></returns>
-        IIoCKernel To<U>() where U : class;
+        IIoCKernel To<U>(object[] args = null) where U : class;
         /// <summary>
         /// 类型绑定，以<see cref="Type"/>类型作为依赖注入实现
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        IIoCKernel To(Type type);
+        IIoCKernel To(Type type, object[] args = null);
     }
 }

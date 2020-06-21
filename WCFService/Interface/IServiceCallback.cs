@@ -6,6 +6,6 @@ namespace WCFService.Interface
     public interface IServiceCallback
     {
         [OperationContract]
-        void ServiceCallback(IServiceResult serviceResult);
+        void ServiceCallback(byte[] value);
     }
 }

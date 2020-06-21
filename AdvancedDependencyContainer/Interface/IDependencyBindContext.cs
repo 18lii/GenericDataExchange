@@ -1,4 +1,8 @@
 ﻿
+using AdvancedDependencyContainer.Dependency;
+using AdvancedDependencyContainer.Entities;
+using System;
+
 namespace AdvancedDependencyContainer.Interface
 {
     /*
@@ -15,22 +19,35 @@ namespace AdvancedDependencyContainer.Interface
     public interface IDependencyBindContext
     {
         /// <summary>
-        /// IoC内核属性，用于绑定依赖组件
-        /// </summary>
-        IIoCKernel IoCKernel { get; set; }
-        /// <summary>
         /// 依赖绑定初始化方法，参数<see cref="string"/> sectionName为app.config配置文件中的自定义section节
         /// <para>！！！若未正确配置，请勿使用，否则可能引起程序崩溃！！！</para>
         /// </summary>
-        /// <param name="sectionName"></param>
-        void UseAppConfiguration(string sectionName);
+        /// <param name="option"></param>
+        /// <param name="keyWord"></param>
+        void UseConfiguration(DependencyConfigurationOption option, string keyWord);
         /// <summary>
-        /// 依赖绑定初始化方法，参数<see cref="string"/> fileName 为配置文件名，
-        /// 配置文件必须位于应用程序根目录，
-        /// 若文件不存在，将自动生成配置文件模板。
-        /// <para>！！！若未正确配置，请勿使用，否则可能引起程序崩溃！！！</para>
+        /// 泛型绑定，以<see cref="{T}"/>类型作为依赖注入契约
         /// </summary>
-        /// <param name="path"></param>
-        void UseXmlConfiguration(string fileName);
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IDependencyBindContext Bind<T>();
+        /// <summary>
+        /// 类型绑定，以<see cref="Type"/>类型作为注入契约
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        IDependencyBindContext Bind(Type type);
+        /// <summary>
+        /// 泛型绑定，以<see cref="{U}"/>类型作为依赖注入实现
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <returns></returns>
+        IDependencyBindContext To<U>(object[] args = null) where U : class;
+        /// <summary>
+        /// 类型绑定，以<see cref="Type"/>类型作为依赖注入实现
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        IDependencyBindContext To(Type type, object[] args = null);
     }
 }

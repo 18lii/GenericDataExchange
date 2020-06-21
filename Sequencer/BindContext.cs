@@ -30,7 +30,8 @@ namespace Sequencer
         public ConcurrentDictionary<string, int> ExecuterDefault { get; set; }
         public ConcurrentDictionary<string, Action<WaitHandle[], ConcurrentQueue<QueueModel>>> Actions { get; }
         public ConcurrentDictionary<string, bool> Register { get; }
-        public ConcurrentDictionary<Guid, object> Result { get; }
+        public QueueAttacher Attacher { get; }
+        public QueueResulter Resulter { get; }
         public BindContext()
         {
             LoaderSignal = new WaitHandle[2] { new AutoResetEvent(false), new ManualResetEvent(false)};
@@ -39,81 +40,76 @@ namespace Sequencer
             ExecuterDefault = new ConcurrentDictionary<string, int>();
             Actions = new ConcurrentDictionary<string, Action<WaitHandle[], ConcurrentQueue<QueueModel>>>();
             Register = new ConcurrentDictionary<string, bool>();
-            Result = new ConcurrentDictionary<Guid, object>();
+            Attacher = new QueueAttacher(Troops, LoaderSignal);
+            Resulter = new QueueResulter();
         }
         public void Bind<T>(string name, Action<T> method, int d = 1)
         {
-            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
+            Actions.TryAdd(name, (signal, queue) =>
             {
                 new QueueExecuter<T>
                 (
                     signal,
                     queue,
-                    new ActionEventWorker<T>
+                    new AxEventContext<T>
                     (
-                        new GenericEventHandle<T>().Register(method)
-                    ).Action
+                        new PeristalticEventProvider<T>(method)
+                    ).Active
                 ).Execute();
-            };
-            Actions.TryAdd(name, action);
+            });
             ExecuterDefault.TryAdd(name, d);
         }
         public void BindAsync<T>(string name, Action<T> method, AsyncCallback callback, int d= 1)
         {
-            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
+            Actions.TryAdd(name, (signal, queue) =>
             {
                 new QueueExecuter<T>
                 (
                     signal,
                     queue,
-                    new ActionEventWorker<T>
+                    new AxEventContext<T>
                     (
-                        new GenericEventHandle<T>().Register(method),
+                        new PeristalticEventProvider<T>(method),
                         callback
-                    ).Action
+                    ).Active
                 ).Execute();
-            };
-            Actions.TryAdd(name, action);
+            });
             ExecuterDefault.TryAdd(name, d);
         }
         public void Bind<T, R>(string name, Func<T, R> method, int d = 1)
         {
-            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
+            Actions.TryAdd(name, (signal, queue) =>
             {
                 new QueueExecuter<T>
                 (
                     signal,
                     queue,
-                    new FunctionEventWorker<T, R>
+                    new FxEventContext<T, R>
                     (
-                        new GenericEventHandle<T, R>().Register(method),
-                        Result,
-                        ResultSignal
-                    ).Action
+                        new PeristalticEventProvider<T, R>(method),
+                        Resulter
+                    ).Active
                 ).Execute();
-            };
-            Actions.TryAdd(name, action);
+            });
             ExecuterDefault.TryAdd(name, d);
         }
         //绑定异步线程
         public void BindAsync<T, R>(string name, Func<T, R> method, AsyncCallback callback, int d = 1)
         {
-            Action<WaitHandle[], ConcurrentQueue<QueueModel>> action = (signal, queue) =>
+            Actions.TryAdd(name, (signal, queue) =>
             {
                 new QueueExecuter<T>
-                (
-                    signal,
-                    queue,
-                    new FunctionEventWorker<T, R>
-                    (
-                        new GenericEventHandle<T, R>().Register(method),
-                        Result,
-                        ResultSignal,
-                        callback
-                    ).Action
-                ).Execute();
-            };
-            Actions.TryAdd(name, action);
+                 (
+                     signal,
+                     queue,
+                     new FxEventContext<T, R>
+                     (
+                         new PeristalticEventProvider<T, R>(method),
+                         Resulter,
+                         callback
+                     ).Active
+                 ).Execute();
+            });
             ExecuterDefault.TryAdd(name, d);
         }
     }

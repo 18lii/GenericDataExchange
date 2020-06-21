@@ -8,7 +8,6 @@ using UnitTestProject.Infrastructure;
 using WCFService;
 using WCFService.Infrastructure;
 using WCFService.Service;
-using AdvancedDependencyContainer.Configurations;
 using WCFService.Interface;
 
 namespace UnitTestProject.Tests
@@ -47,11 +46,7 @@ namespace UnitTestProject.Tests
         public void WindowsServiceTest()
         {
             //读取密文,初始化WCF服务组件
-            new WCFInitialization().Initialization(new string[]
-            {
-                ConfigurationManager.AppSettings["DESString"],
-                ConfigurationManager.AppSettings["DESKey"]
-            });
+            new WCFInitialization().Initialization();
 
             //读取服务基地址
             var baseAddr = ConfigurationManager.AppSettings["baseAddress"];

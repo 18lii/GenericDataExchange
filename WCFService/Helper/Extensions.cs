@@ -1,5 +1,9 @@
-﻿using System.Collections;
+﻿using Database.Helper;
+using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using TransparentAgent.Interface;
+using WCFService.Infrastructure;
 
 namespace WCFService.Helper
 {
@@ -10,20 +14,16 @@ namespace WCFService.Helper
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static ConcurrentDictionary<string, Hashtable> ToContextParam(this string[] keys, Hashtable[] values)
+        public static Tuple<int, ConcurrentDictionary<string, Hashtable>> ToContextParam(this byte[] value, int operateCode, out bool sequence)
         {
+            var data = value.Decompress<IContractData>();
             var dic = new ConcurrentDictionary<string, Hashtable>();
-            for (var i = 0; i < keys.Length; i++)
+            for (var i = 0; i < data.SqlText.Length; i++)
             {
-                dic.TryAdd(keys[i], values[i]);
+                dic.TryAdd(data.SqlText[i], data.Param[i]);
             }
-            return dic;
-        }
-        public static ConcurrentDictionary<string, Hashtable> ToContextParam(this string key, Hashtable value)
-        {
-            var dic = new ConcurrentDictionary<string, Hashtable>();
-            dic.TryAdd(key, value);
-            return dic;
+            sequence = data.Sequence;
+            return new Tuple<int, ConcurrentDictionary<string, Hashtable>>(operateCode, dic);
         }
     }
 }

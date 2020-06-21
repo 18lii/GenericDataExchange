@@ -11,12 +11,17 @@ namespace AdvancedDependencyContainer.Dependency
     /// </summary>
     internal class DIManager
     {
-        private Dictionary<Type, Type> _DITypeInfo;
+        private readonly Dictionary<Type, Type> _DITypeInfo;
+        private readonly Dictionary<Type, object[]> _DIArgsInfo;
         public DIManager()
         {
             if(_DITypeInfo == null)
             {
                 _DITypeInfo = new Dictionary<Type, Type>();
+            }
+            if(_DIArgsInfo == null)
+            {
+                _DIArgsInfo = new Dictionary<Type, object[]>();
             }
         }
 
@@ -25,7 +30,7 @@ namespace AdvancedDependencyContainer.Dependency
         /// </summary>
         /// <param name="key">抽象类型</param>
         /// <param name="value">实现类型</param>
-        public void AddTypeInfo(Type key, Type value)
+        public void AddTypeInfo(Type key, Type value, object[] parameters)
         {
             if (key == null)
             {
@@ -38,6 +43,10 @@ namespace AdvancedDependencyContainer.Dependency
             if (value == null)
             {
                 throw new ArgumentNullException("value");
+            }
+            if(parameters != null && parameters.Length > 0)
+            {
+                _DIArgsInfo.Add(value, parameters);
             }
             _DITypeInfo.Add(key, value);
         }
@@ -59,6 +68,18 @@ namespace AdvancedDependencyContainer.Dependency
             }
             return null;
         }
+        public object[] GetArgsInfo(Type key)
+        {
+            if(key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+            if (_DIArgsInfo.ContainsKey(key))
+            {
+                return _DIArgsInfo[key];
+            }
+            return null;
+        }
         /// <summary>
         /// 判断契约类型是否存在
         /// </summary>
@@ -70,7 +91,7 @@ namespace AdvancedDependencyContainer.Dependency
             {
                 throw new ArgumentNullException("key");
             }
-            return _DITypeInfo.ContainsKey(key);
+            return _DITypeInfo.ContainsKey(key) || _DIArgsInfo.ContainsKey(key);
         }
     }
 }

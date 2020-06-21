@@ -11,7 +11,7 @@ namespace AdvancedDependencyContainer.Interface
     /// </summary>
     internal interface IDITypeAnalytical
     {
-        T GetValue<T>(object parameter = null);
-        object GetValue(Type type, object parameter = null);
+        T GetValue<T>();
+        object GetValue(Type type);
     }
 }

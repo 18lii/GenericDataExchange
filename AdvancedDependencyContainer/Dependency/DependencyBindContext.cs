@@ -1,4 +1,5 @@
 ﻿using AdvancedDependencyContainer.Configurations;
+using AdvancedDependencyContainer.Entities;
 using AdvancedDependencyContainer.Helper;
 using AdvancedDependencyContainer.Infrastructure;
 using AdvancedDependencyContainer.Interface;
@@ -14,17 +15,75 @@ namespace AdvancedDependencyContainer.Dependency
     /// <summary>
     /// 依赖绑定上下文类，内部类
     /// </summary>
-    internal class DependencyBindContext : IDependencyBindContext
+    internal sealed class DependencyBindContext : IDependencyBindContext
     {
-        public IIoCKernel IoCKernel { get; set; }
+        public DependencyBindContext()
+        {
+            this.IoCKernel = new IoCKernel();
+        }
+        public IoCKernel IoCKernel { get; set; }
+
+        /// <summary>
+        /// 泛型绑定，以<see cref="{T}"/>类型作为依赖注入契约
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IDependencyBindContext Bind<T>()
+        {
+            IoCKernel.Bind<T>();
+            return this;
+        }
+        /// <summary>
+        /// 类型绑定，以<see cref="Type"/>类型作为注入契约
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IDependencyBindContext Bind(Type type)
+        {
+            IoCKernel.Bind(type);
+            return this;
+        }
+        /// <summary>
+        /// 泛型绑定，以<see cref="{U}"/>类型作为依赖注入实现
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <returns></returns>
+        public IDependencyBindContext To<U>(object[] args = null) where U : class
+        {
+            IoCKernel.To<U>(args);
+            return this;
+        }
+        /// <summary>
+        /// 类型绑定，以<see cref="Type"/>类型作为依赖注入实现
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IDependencyBindContext To(Type type, object[] args = null)
+        {
+            IoCKernel.To(type, args);
+            return this;
+        }
+        public void UseConfiguration(DependencyConfigurationOption option, string keyWord)
+        {
+            switch (option)
+            {
+                case DependencyConfigurationOption.App:
+                    UseAppConfiguration(keyWord);
+                    break;
+                case DependencyConfigurationOption.Xml:
+                    UseXmlConfiguration(keyWord);
+                    break;
+            }
+        }
         /// <summary>
         /// 应用app.config配置文件中的自定义section-> dependencyConfiguration节作为绑定依据
         /// </summary>
-        public void UseAppConfiguration(string sectionName)
+        private void UseAppConfiguration(string sectionName)
         {
             try
             {
-                var section = ConfigurationManager.GetSection(sectionName).CastTo<DependencyComponentAppConfiguration>();
+                DependencyComponentAppConfiguration section;
+                section = ConfigurationManager.GetSection(sectionName).CastTo<DependencyComponentAppConfiguration>();
                 if (section != null && section.Dependency.Count > 0)
                 {
                     foreach (AppComponentCollection component in section.Dependency)
@@ -42,12 +101,16 @@ namespace AdvancedDependencyContainer.Dependency
                                     || string.IsNullOrEmpty(element.Contract.Location)
                                     || string.IsNullOrEmpty(element.Realizer.Name)
                                     || string.IsNullOrEmpty(element.Realizer.Location)) continue;
-                                var key = string.Format("{0}.{1}.{2}", component.Provider, element.Contract.Location, element.Contract.Name);
-                                var val = string.Format("{0}.{1}.{2}", component.Provider, element.Realizer.Location, element.Realizer.Name);
+                                var key = string.Format("{0}.{1}", element.Contract.Location, element.Contract.Name);
+                                var val = string.Format("{0}.{1}", element.Realizer.Location, element.Realizer.Name);
                                 IoCKernel.Bind(assembly.GetType(key)).To(assembly.GetType(val));
                             }
                         }
                     }
+                }
+                else
+                {
+                    section = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).GetSection(sectionName).CastTo<DependencyComponentAppConfiguration>();
                 }
             }
             catch { }
@@ -57,7 +120,7 @@ namespace AdvancedDependencyContainer.Dependency
         /// 参数<see cref="string"/> path 为配置文件路径(含文件名)，
         /// </summary>
         /// <param name="fileName"></param>
-        public void UseXmlConfiguration(string fileName)
+        private void UseXmlConfiguration(string fileName)
         {
             var path = string.Format("{0}\\{1}.cfg", AppDomain.CurrentDomain.BaseDirectory, fileName);
             if (File.Exists(path))
@@ -77,8 +140,8 @@ namespace AdvancedDependencyContainer.Dependency
                                     || string.IsNullOrEmpty(element.Contract.Location)
                                     || string.IsNullOrEmpty(element.Realizer.Name)
                                     || string.IsNullOrEmpty(element.Realizer.Location)) return;
-                                var key = string.Format("{0}.{1}.{2}", composition.Provider, element.Contract.Location, element.Contract.Name);
-                                var val = string.Format("{0}.{1}.{2}", composition.Provider, element.Realizer.Location, element.Realizer.Name);
+                                var key = string.Format("{0}.{1}", element.Contract.Location, element.Contract.Name);
+                                var val = string.Format("{0}.{1}", element.Realizer.Location, element.Realizer.Name);
                                 
                                 IoCKernel.Bind(assembly.GetType(key)).To(assembly.GetType(val));
                             }
@@ -118,12 +181,7 @@ namespace AdvancedDependencyContainer.Dependency
                         }
                     }
                 });
-                var buffer = Encoding.Default.GetBytes(xmlString);
-                using (var stream = File.Create(path))
-                {
-                    stream.Write(buffer, 0, buffer.Length);
-                    stream.Close();
-                }
+                FileUtil.FileCreate(Encoding.Default.GetBytes(xmlString), path);
             }
         }
     }

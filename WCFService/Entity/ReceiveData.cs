@@ -12,6 +12,6 @@ namespace WCFService.Entity
         public string[] SqlText { get; set; }
         public Hashtable[] Param { get; set; }
         public DataSet[] DataSet { get; set; }
-        public bool sequence { get; set; }
+        public bool Sequence { get; set; }
     }
 }

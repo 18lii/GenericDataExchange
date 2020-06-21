@@ -1,11 +1,11 @@
-﻿using Database.Helper;
-using Database.Interface;
+﻿using Database.Interface;
 using Sequencer.Interface;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Configuration;
 using System.Data;
+using WCFService.Events;
 
 namespace WCFService
 {
@@ -28,8 +28,10 @@ namespace WCFService
         {
             var name1 = "SqlClient";
             var name2 = "AdoClient";
-            Context.Bind<Tuple<CmdOperate, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>>(name1, _commandContext.Activing, 5);
-            Context.Bind<Tuple<AptOperate, string[], DataSet[]>, Tuple<bool, object>>(name2, _adapterContext.Activing);
+            Context.Bind<Tuple<int, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>>(name1, _commandContext.Activing);
+            Context.Bind<Tuple<int, string[], DataSet[]>, Tuple<bool, object>>(name2, _adapterContext.Activing);
+            ServiceEventHandle<Tuple<int, ConcurrentDictionary<string, Hashtable>>, Tuple<bool, object>>.ActiveEvent += _commandContext.Activing;
+            ServiceEventHandle<Tuple<int, string[], DataSet[]>, Tuple<bool, object>>.ActiveEvent += _adapterContext.Activing;
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             config.AppSettings.Settings.Remove("QueueExecute1");
             config.AppSettings.Settings.Remove("QueueExecute2");

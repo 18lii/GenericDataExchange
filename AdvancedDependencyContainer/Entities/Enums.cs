@@ -14,4 +14,9 @@ namespace AdvancedDependencyContainer.Entities
         DateTime,
         Boolean
     }
+    public enum DependencyConfigurationOption
+    {
+        App,
+        Xml
+    }
 }

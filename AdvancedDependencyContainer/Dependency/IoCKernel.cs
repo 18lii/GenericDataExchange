@@ -23,30 +23,30 @@ namespace AdvancedDependencyContainer.Dependency
             _baseType = type;
             return this;
         }
-        public IIoCKernel To<U>() where U : class
+        public IIoCKernel To<U>(object[] args = null) where U : class
         {
             var type = typeof(U);
             if(type.BaseType == _baseType || type.GetInterface(_baseType.Name) != null)
             {
-                IoCContext.Context.DIManager.AddTypeInfo(_baseType, type);
+                IoCContext.Context.DIManager.AddTypeInfo(_baseType, type, args);
             }
             return this;
         }
-        public IIoCKernel To(Type type)
+        public IIoCKernel To(Type type, object[] args = null)
         {
             if(type.BaseType == _baseType || type.GetInterface(_baseType.Name) != null)
             {
-                IoCContext.Context.DIManager.AddTypeInfo(_baseType, type);
+                IoCContext.Context.DIManager.AddTypeInfo(_baseType, type, args);
             }
             return this;
         }
-        public V Resolve<V>(object parameter = null) where V : class
+        public V Resolve<V>() where V : class
         {
-            return IoCContext.Context.DITypeAnalyticalProvider.CreateDITypeAnalaytical().GetValue<V>(parameter);
+            return IoCContext.Context.DITypeAnalyticalProvider.CreateDITypeAnalaytical().GetValue<V>();
         }
-        public object Resolve(Type type, object parameter = null)
+        public object Resolve(Type type)
         {
-            return IoCContext.Context.DITypeAnalyticalProvider.CreateDITypeAnalaytical().GetValue(type, parameter);
+            return IoCContext.Context.DITypeAnalyticalProvider.CreateDITypeAnalaytical().GetValue(type);
         }
     }
 }

@@ -18,10 +18,7 @@ namespace AdvancedDependencyContainer.ContainerUnity
         public DependencyComponentInitialization(IDependencyConfiguration dependencyConfiguration)
         {
             _dependencyConfiguration = dependencyConfiguration;
-            _dependencyConfiguration.DependencyBindContext = new DependencyBindContext
-            {
-                IoCKernel = new IoCKernel()
-            };
+            _dependencyConfiguration.DependencyBindContext = new DependencyBindContext();
         }
         
         /// <summary>
@@ -32,7 +29,7 @@ namespace AdvancedDependencyContainer.ContainerUnity
             //绑定用户定义依赖
             var configuration = _dependencyConfiguration.BindDependency();
             //注册控制反转事件
-            DependencyEventHandle.ResolveEvent += (((IoCKernel)configuration.IoCKernel).Resolve);
+            DependencyEventHandle.ResolveEvent += ((DependencyBindContext)configuration).IoCKernel.Resolve;
         }
     }
 }

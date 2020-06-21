@@ -10,7 +10,7 @@ namespace AdvancedDependencyContainer.Dependency
     /// <summary>
     /// IoC上下文类
     /// </summary>
-    internal class IoCContext
+    internal sealed class IoCContext
     {
         private IoCContext() { }
 

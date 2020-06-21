@@ -6,6 +6,6 @@ namespace Database.Interface
 {
     public interface IAdapterContext : IBaseContext
     {
-        Tuple<bool, object> Activing(Tuple<AptOperate, string[], DataSet[]> context);
+        Tuple<bool, object> Activing(Tuple<int, string[], DataSet[]> context);
     }
 }

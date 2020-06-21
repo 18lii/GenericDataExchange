@@ -11,6 +11,6 @@ namespace TransparentAgent.Interface
         string[] SqlText { get; set; }
         Hashtable[] Param { get; set; }
         DataSet[] DataSet { get; set; }
-        bool sequence { get; set; }
+        bool Sequence { get; set; }
     }
 }

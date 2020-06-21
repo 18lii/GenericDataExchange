@@ -10,9 +10,8 @@ namespace Sequencer.Entities
     /// <summary>
     /// 队列元素模型
     /// </summary>
-    internal class QueueModel : IQueueModel
+    internal struct QueueModel : IQueueModel
     {
-        public QueueModel() { }
         public QueueModel(string name, Guid id, object item, bool sequence)
         {
             Id = id;
